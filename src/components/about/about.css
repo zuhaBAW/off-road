@@ -1,0 +1,258 @@
+/* ================================
+   Fullscreen About + Calendar Hero
+   ================================ */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #000;
+  color: #c4c0c0;
+}
+
+/* Container fills viewport and centers content */
+.app-container {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr; /* about | calendar */
+  gap: clamp(30px, 5vw, 60px);
+  align-items: center;      /* vertical center */
+  justify-content: center;  /* horizontal center */
+  height: 100vh;            /* full viewport */
+  padding: clamp(20px, 4vw, 60px);
+  box-sizing: border-box;
+}
+
+/* About Section */
+.about-us-container {
+  max-width: 100%;
+}
+
+.about-us-title {
+  font-family: 'SGlitch', sans-serif;
+  font-weight: 200;
+  margin: 0 0 20px 0;
+  color: #f9aa32;
+  font-size: clamp(48px, 10vw, 150px);
+  line-height: .9;
+}
+
+.about-us-text {
+  font-family: 'MontserratLight', sans-serif;
+  font-size: clamp(14px, 1.4vw, 18px);
+  line-height: 1.6;
+  color: #d5d2d2;
+  margin: 0 0 28px 0;
+}
+
+.book-now-button {
+  background-color: #e09f3e;
+  color: #1a1a1a;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  font-size: clamp(14px, 1.1vw, 18px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+.book-now-button:hover { background-color: #cc8e33; }
+.book-now-button:active { transform: translateY(1px); }
+
+/* Calendar Section */
+.calendar-container {
+  background-color: #000;
+  border: 2px solid #cc8e33;
+  border-radius: 20px;
+  padding: clamp(20px, 3vw, 30px);
+  width: min(420px, 90vw);
+  box-sizing: border-box;
+}
+
+/* Calendar Header */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'SGlitch', sans-serif;
+  font-size: clamp(18px, 2vw, 28px);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+.calendar-month { color: #e09f3e; margin: 0; }
+
+/* Calendar Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.weekday-header {
+  font-weight: bold;
+  padding: 10px 0;
+  background-color: #f5f3ed;
+  color: #000;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+.weekday-header.weekend-header {
+  background-color: #e68f0d;
+  color: #fff;
+}
+
+.calendar-day {
+  padding: 10px 0;
+  background-color: #050000;
+  border: 1px solid white;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.calendar-day.today {
+  background-color: #e09f3e;
+  color: #1a1a1a;
+  font-weight: bold;
+}
+.calendar-day.event-day {
+  border: 2px solid #e09f3e;
+  color: #e09f3e;
+  font-weight: bold;
+}
+/* .calendar-day.weekend {
+  background-color: #000;
+  color: #e68f0d;
+  font-weight: 600;
+} */
+.empty-day {
+  background: transparent;
+  border: none;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .app-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    align-items: center;
+    justify-items: center;
+    text-align: center;
+    padding: 20px;
+  }
+  .calendar-container { width: 100%; }
+  .about-us-title { font-size: clamp(38px, 14vw, 90px); }
+}
+/* --- Mobile overlap fixes --- */
+@media (max-width: 900px) {
+  /* Let the hero grow; don't clip at 100vh */
+  .app-container {
+    height: auto;              /* was 100vh */
+    min-height: 100dvh;        /* still fills the screen initially */
+    padding: 20px 16px 28px;   /* bottom pad so it clears next section */
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    justify-items: center;
+    align-items: start;
+  }
+
+  /* Make calendar full-width but compact */
+  .calendar-container {
+    width: 100%;
+    max-width: 520px;
+    padding: 16px 14px 18px;
+    border-radius: 16px;
+  }
+
+  .calendar-header {
+    margin-bottom: 12px;
+    font-size: clamp(16px, 5vw, 22px);
+  }
+
+  .calendar-grid {
+    gap: 6px;                           /* tighter gaps */
+  }
+
+  .weekday-header {
+    padding: 6px 0;
+    font-size: clamp(11px, 3.2vw, 13px);
+    border-radius: 6px;
+  }
+
+  .calendar-day {
+    padding: 8px 0;                     /* smaller cells */
+    border-radius: 10px;
+    font-size: clamp(12px, 3.5vw, 15px);
+  }
+}
+
+/* --- Very small devices: extra compaction --- */
+@media (max-width: 380px) {
+  .calendar-grid { gap: 4px; }
+  .calendar-day { padding: 7px 0; }
+}
+
+/* --- Safer viewport units on mobile address bars --- */
+.app-container { height: 100svh; }      /* replaces 100vh on modern browsers */
+@supports not (height: 100svh) {
+  .app-container { height: 100vh; }     /* fallback */
+}
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+/* Modal box */
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  width: min(400px, 90%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  text-align: center;
+}
+
+/* Close button */
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Texts */
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+.modal-text {
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+
+/* Actions */
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.cancel-button {
+  background: #ddd;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+.cancel-button:hover {
+  background: #bbb;
+}

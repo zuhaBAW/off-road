@@ -1,0 +1,518 @@
+/* ================================
+   Offroad Adda – Hero + Glass Nav
+   ================================ */
+
+/* Tokens */
+/* :root{
+  --gutter: clamp(16px, 6vw, 120px);
+  --amber: #ffa201;
+  --amber-600: #d78300;
+  --glass: rgba(20,20,20,.55);
+  --glass-strong: rgba(25,25,25,.72);
+  --ink: #ffffff;
+} */
+
+/* Base */
+html, body, #root { height: 100%; width: 100%; }
+body{ margin: 0; min-width: 320px; color: var(--ink); }
+
+/* Section background (set image inline on <section>) */
+.home-section{
+  position: relative;
+  min-height: 100dvh; /* safe viewport */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Single amber line across the very top */
+.home-section::before{
+  content:"";
+  margin-top: 20px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent 0 5%, var(--amber) 5% 95%, transparent 95% 100%);
+  z-index: 200;
+}
+
+/* ================================
+   NAVBAR
+   ================================ */
+
+.nav-wrap{
+  position: sticky;
+  top: 0;
+  z-index: 220;
+  display: grid;
+  grid-template-columns: auto 1fr;   /* logo | links */
+  align-items: center;
+  height: clamp(66px, 9vw, 86px);
+  padding-inline: var(--gutter);
+  background: linear-gradient(0deg, var(--glass), var(--glass-strong));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-bottom: 3px solid rgba(255,162,1,.6);
+}
+
+.brand-logo{
+  width: clamp(120px, 14vw, 200px);
+  height: auto;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.35));
+}
+
+.navbar{
+  display: flex;
+  justify-content: center;
+}
+.navbar ul{
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 5.4vw, 64px);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.navbar li{
+  font-size: clamp(16px, 2.2vw, 28px);
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: #fff;
+  white-space: nowrap;
+  position: relative;
+  cursor: pointer;
+}
+.navbar li::after{
+  content:"";
+  position: absolute;
+  left: 0; right: 0; bottom: -12px;
+  height: 3px;
+  background: transparent;
+  transition: background .2s ease;
+}
+.navbar li:hover::after{ background: rgba(255,162,1,.75); }
+.navbar .active{ color: var(--amber); }
+
+/* ================================
+   HERO LAYOUT
+   ================================ */
+
+.home-content{ min-height: calc(100dvh - clamp(66px, 9vw, 86px)); }
+.main{ position: relative; min-height: 100%; padding-inline: var(--gutter); }
+
+/* Left: Hero text */
+.hero{ position: relative; min-height: 100%; }
+.hero-copy{
+  position: absolute;
+  left: 0;
+  bottom: clamp(22vh, 28vh, 34vh);
+  z-index: 3;
+}
+.hero-title{
+  margin: 0;
+  font-family: 'SGlitch', system-ui, sans-serif;
+  font-weight: 200;
+  font-size: clamp(68px, 11vw, 170px);
+  line-height: .9;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--amber);
+  text-shadow: 0 3px 18px rgba(0,0,0,.55);
+}
+.hero-script{
+  margin: 0;
+  position: relative;
+  top: clamp(-12px, -1.2vw, -6px);
+  left: clamp(8vw, 14vw, 26vw);
+  font-family: "Kaushan Script", "Brush Script MT", cursive;
+  font-weight: 700;
+  font-size: clamp(48px, 7.2vw, 128px);
+  line-height: .96;
+  color: #fff;
+  text-shadow: 0 4px 20px rgba(0,0,0,.65);
+  white-space: nowrap;
+}
+.hero-tagline{
+  margin-top: clamp(8px, 1.2vw, 14px);
+  width: clamp(260px, 28vw, 560px);
+  padding: clamp(10px, 1.2vw, 14px) clamp(16px, 2vw, 24px);
+  border-radius: 14px;
+  background: rgba(255,255,255,.09);
+  border: 2px solid rgba(255,255,255,.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 8px 26px rgba(0,0,0,.28);
+}
+.hero-tagline span{
+  display: block;
+  font-size: clamp(18px, 2.2vw, 28px);
+  line-height: 1.1;
+  font-weight: 500;
+}
+
+/* Right: Login card */
+.login-main{
+  position: absolute;
+  right: 0;
+  top: clamp(18vh, 22vh, 26vh);
+  z-index: 4;
+}
+.login-card{
+  width: clamp(300px, 22vw, 380px);
+  background: rgba(40, 40, 40, 0.46);
+  padding: 14px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 12px 32px rgba(0,0,0,.28);
+  backdrop-filter: blur(2px);
+}
+.logo{ display:flex; justify-content:center; align-items:center; margin-top: 4px; }
+.logo img{ width: 140px; height: 140px; object-fit: contain; border-radius: 8px; }
+.login-sub-card{
+  border-radius: 12px;
+  padding-top: 6px;
+  min-height: 200px;
+  background-color: rgba(252, 250, 250, 0.18);
+  width: 100%;
+  margin: 0 auto;
+}
+.login-card h4{ margin: 10px 0 12px; color: #111; }
+.login-card input{
+  display: block;
+  background-color: rgba(255,255,255,.93);
+  width: 80%;
+  margin: 10px auto;
+  padding: 12px 14px;
+  border-radius: 26px;
+  border: none;
+  font-size: 14px;
+}
+.error-text{ margin: 2px 0 8px; color: #ffb0b0; font-size: 12px; }
+.login-card .join-text{ margin: 10px 0; font-size: 14px; }
+.login-card .join-text a{ color: var(--amber-600); text-decoration: none; }
+.login-btn{
+  background: var(--amber-600);
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  width: 70%;
+  border-radius: 26px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.forgot{ display: block; margin-top: 10px; font-size: 12px; color: #ccc; text-decoration: none; }
+.forgot:hover{ color: #fff; }
+
+/* Social bar pinned to bottom */
+.home-social{
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  bottom: 24px;
+  width: min(1200px, 96vw);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 5;
+}
+.social-link{ display: inline-flex; align-items: center; gap: 16px; text-decoration: none; }
+.social-text{ color: #fff; font-weight: 300; letter-spacing: .02em; font-size: clamp(12px, 2vw, 22px); }
+.social-action{
+  padding: 8px;
+  aspect-ratio: 1 / 1;
+  color: #f59e0b;
+  background: rgba(0,0,0,.45);
+  border: 1px solid #f59e0b;
+  box-shadow: inset 0 0 0 2px rgba(245,158,11,.18);
+  border-radius: 999px;
+  transition: transform .15s ease, opacity .15s ease;
+}
+.social-link:hover .social-action{ transform: translateY(-1px); opacity: .95; }
+
+/* ================================
+   Responsive
+   ================================ */
+
+/* Tablet */
+@media (max-width: 1024px){
+  .brand-logo{ width: clamp(110px, 14vw, 160px); }
+  .navbar ul{ gap: clamp(16px, 4.6vw, 40px); }
+  .hero-copy{ bottom: 24vh; }
+  .login-main{ top: 22vh; }
+  .login-card{ width: clamp(280px, 32vw, 360px); }
+}
+
+/* Mobile: stack hero then card; nav remains glass */
+@media (max-width: 768px){
+  .nav-wrap{
+    grid-template-columns: auto 1fr;
+    height: 64px;
+    padding-inline: 16px;
+    overflow-x: auto;
+  }
+  .brand-logo{ width: 96px; }
+
+  .navbar ul{ gap: 16px; font-size: 14px; white-space: nowrap; }
+
+  .home-content{ min-height: auto; }
+  .main{ padding-inline: 16px; }
+
+  /* stop absolute positioning → natural flow */
+  .hero-copy{ position: static; margin: 80px 0 8px; }
+  .hero-title{ font-size: clamp(44px, 14vw, 80px); }
+  .hero-script{ font-size: clamp(36px, 10vw, 64px); left: 0; top: -6px; }
+  .hero-tagline{ width: min(92vw, 520px); }
+
+  .login-main{ position: static; margin-top: 12px; }
+  .login-card{ width: min(92vw, 380px); }
+
+  .home-social{ bottom: 16px; width: 94vw; }
+  .social-text{ font-size: clamp(14px, 3.6vw, 20px); }
+}
+
+/* Very short screens */
+@media (max-height: 700px){
+  .hero-title{ font-size: clamp(40px, 12vw, 70px); }
+  .hero-script{ font-size: clamp(32px, 9vw, 56px); }
+  .logo img{ width: 110px; height: 110px; }
+}
+/* =========================
+   QUICK UI FIXES (paste last)
+   ========================= */
+
+/* 0) Remove the extra amber hairline if it’s still showing */
+.home-section::before { content: none !important; }
+
+/* 1) Navbar: slimmer, centered, no giant text */
+.nav-wrap{
+  height: 72px !important;                          /* was ~86 */
+  padding-inline: clamp(20px, 4vw, 80px) !important;
+  grid-template-columns: auto 1fr !important;
+  align-items: center !important;
+  background: linear-gradient(0deg, rgba(20,20,20,.46), rgba(25,25,25,.62)) !important;
+  border-bottom: 2px solid rgba(255,162,1,.55) !important;
+}
+
+.brand-logo{
+  width: clamp(110px, 12vw, 160px) !important;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)) !important;
+}
+
+/* keep links on a single line, centered, with sane size */
+.navbar{ display:flex !important; justify-content:center !important; }
+.navbar ul{
+  display:flex !important;
+  align-items:center !important;
+  gap: clamp(16px, 4vw, 44px) !important;
+  margin: 0 !important; padding: 0 !important; list-style: none !important;
+  white-space: nowrap !important;
+}
+.navbar li{
+  font-size: clamp(16px, 1.6vw, 22px) !important;   /* smaller */
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  color:#fff !important;
+  position: relative !important;
+  cursor: pointer !important;
+}
+.navbar li::after{
+  content:"" !important;
+  position:absolute !important; left:0; right:0; bottom:-10px !important;
+  height: 2px !important; background: transparent !important;
+  transition: background .2s ease !important;
+}
+.navbar li:hover::after{ background: rgba(255,162,1,.8) !important; }
+.navbar .active{ color:#ffa201 !important; }
+
+/* 2) Hero: keep within one view band */
+.home-content{ min-height: calc(100dvh - 72px) !important; } /* bar height accounted */
+
+/* 3) Login card: align with the right “panel” area, not too high */
+.login-main{
+  top: clamp(20vh, 24vh, 28vh) !important;  /* nudge a bit lower */
+  right: clamp(12px, 5vw, 80px) !important;
+}
+.login-card{ width: clamp(300px, 23vw, 380px) !important; }
+
+/* 4) Make sure nothing huge leaks on ultra-wide screens */
+.hero-title{ font-size: clamp(60px, 9.8vw, 150px) !important; }
+.hero-script{ font-size: clamp(44px, 6.4vw, 112px) !important; left: clamp(6vw, 12vw, 22vw) !important; }
+
+/* 5) Mobile polish: bar and links usable, stack content */
+@media (max-width: 900px){
+  .nav-wrap{ height: 60px !important; padding-inline: 16px !important; }
+  .brand-logo{ width: 96px !important; }
+  .navbar ul{ gap: 16px !important; font-size: 14px !important; overflow-x: auto; }
+  .hero-copy{ position: static !important; margin: 76px 0 8px !important; }
+  .login-main{ position: static !important; margin-top: 12px !important; }
+  .login-card{ width: min(92vw, 380px) !important; }
+}
+
+/* 6) Very short viewports: avoid overlapping */
+@media (max-height: 700px){
+  .hero-title{ font-size: clamp(38px, 12vw, 68px) !important; }
+  .hero-script{ font-size: clamp(30px, 9vw, 54px) !important; }
+}
+/* ========= UI RESCUE PACK (paste last) ========= */
+
+/* Make sure nothing clips inside the hero */
+.home-section { overflow: visible !important; }
+
+/* NAV — slimmer, centered, single glass bar */
+.nav-wrap{
+  height: 72px !important;
+  padding-inline: clamp(20px, 4vw, 80px) !important;
+  grid-template-columns: auto 1fr !important;
+  align-items: center !important;
+  background: linear-gradient(0deg, rgba(20,20,20,.46), rgba(25,25,25,.62)) !important;
+  border-bottom: 2px solid rgba(255,162,1,.55) !important;
+}
+.brand-logo{ width: clamp(110px, 12vw, 160px) !important; }
+.navbar{ display:flex !important; justify-content:center !important; margin-top: -60px;}
+.navbar ul{
+  display:flex !important; gap: clamp(16px, 4vw, 44px) !important;
+  margin:0 !important; padding:0 !important; list-style:none !important; white-space:nowrap !important;
+}
+.navbar li{
+  font-size: clamp(16px, 1.6vw, 22px) !important;
+  font-weight: 700 !important; color:#fff !important; line-height:1 !important; position:relative !important;
+}
+.navbar li::after{
+  content:"" !important; position:absolute !important; left:0; right:0; bottom:-10px !important;
+  height:2px !important; background:transparent !important; transition:background .2s ease !important;
+}
+.navbar li:hover::after{ background:rgba(255,162,1,.8) !important; }
+.navbar .active{ color:#ffa201 !important; }
+
+/* Keep content band exactly one viewport below the bar */
+.home-content{ min-height: calc(100svh - 72px) !important; }
+
+/* HERO — put the text back, on top of everything */
+.hero{ position: relative !important; }
+.hero-copy{
+  position: absolute !important;
+  left: clamp(24px, 8vw, 120px) !important;
+  top: clamp(140px, 22vh, 280px) !important;   /* << controls the vertical band */
+  bottom: auto !important;
+  z-index: 10 !important;                      /* above any overlays */
+}
+.hero-title{
+  margin:0 !important;
+  font-family: 'SGlitch', Impact, Haettenschweiler, 'Arial Black', sans-serif !important;
+  font-weight: 200 !important;
+  font-size: clamp(60px, 9.8vw, 150px) !important;
+  line-height:.92 !important; letter-spacing:.04em !important;
+  color:#ffa201 !important;
+  text-shadow: 0 3px 18px rgba(0,0,0,.6) !important;
+}
+.hero-script{
+  margin:0 !important;
+  position: relative !important;
+  top: -8px !important;
+  left: clamp(6vw, 12vw, 22vw) !important;
+  font-family: "Kaushan Script","Brush Script MT",cursive !important;
+  font-weight:700 !important;
+  font-size: clamp(44px, 6.4vw, 112px) !important;
+  color:#fff !important;
+  text-shadow: 0 4px 20px rgba(0,0,0,.65) !important;
+  white-space: nowrap !important;
+}
+.hero-tagline{
+  width: clamp(260px, 28vw, 560px) !important;
+  background: rgba(255,255,255,.09) !important;
+  border: 2px solid rgba(255,255,255,.35) !important;
+  border-radius: 14px !important;
+  padding: clamp(10px,1.2vw,14px) clamp(16px,2vw,24px) !important;
+  box-shadow: 0 8px 26px rgba(0,0,0,.28) !important;
+}
+
+/* LOGIN CARD — right band, aligned with hero text */
+.login-main{
+  position: absolute !important;
+  right: clamp(12px, 5vw, 80px) !important;
+  top: clamp(20vh, 24vh, 28vh) !important;
+  z-index: 9 !important;
+}
+.login-card{ width: clamp(300px, 23vw, 380px) !important; }
+
+/* MOBILE — stack everything neatly */
+@media (max-width: 900px){
+  .nav-wrap{ height: 60px !important; padding-inline: 16px !important; }
+  .brand-logo{ width: 96px !important; }
+  .navbar ul{ gap: 16px !important; font-size: 14px !important; overflow-x:auto; }
+
+  .home-content{ min-height: auto !important; }
+  .hero-copy{ position: static !important; margin: 76px 0 8px !important; }
+  .hero-title{ font-size: clamp(44px, 14vw, 80px) !important; }
+  .hero-script{ font-size: clamp(36px, 10vw, 64px) !important; left: 0 !important; }
+  .login-main{ position: static !important; margin-top: 12px !important; }
+  .login-card{ width: min(92vw, 380px) !important; }
+}
+/* ======== HOME SHIELD against App.css ======== */
+.home-section{
+  padding-top: 0 !important;
+  min-height: 100svh !important; /* own the height */
+  height: auto !important;
+}
+
+.nav-wrap{ position: sticky !important; top: 0 !important; }
+
+.navbar ul{
+  flex-wrap: nowrap !important;
+  justify-content: center !important;
+  gap: clamp(18px, 5.2vw, 64px) !important;
+}
+
+.hero{ position: relative !important; } /* neutralize flex:1 from App.css */
+/* =========================
+   FINAL POLISH — paste last
+   ========================= */
+
+/* 1) Navbar: slimmer bar, crisper underline, lighter link weight */
+.nav-wrap{
+  height: 68px !important;
+  border-bottom: 2px solid rgba(249,170,50,.55) !important;
+  background: linear-gradient(0deg, rgba(18,18,18,.44), rgba(24,24,24,.62)) !important;
+}
+.navbar li{
+  font-weight: 600 !important;                 /* was a bit heavy */
+  text-shadow: 0 1px 4px rgba(0,0,0,.25);      /* subtle readability */
+}
+.navbar li::after{
+  bottom: -6px !important;                     /* underline closer to text */
+  height: 2px !important;
+}
+.navbar .active{ color: #f9aa32 !important; }
+
+/* 2) Hero tagline pill: darker glass like the mock */
+.hero-tagline{
+  background: rgba(0,0,0,.30) !important;
+  border: 1.5px solid rgba(255,255,255,.22) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  box-shadow: 0 10px 26px rgba(0,0,0,.35) !important;
+}
+
+/* 3) Login panel: a touch darker + crisper inner card */
+.login-card{
+  background: rgba(18,18,18,.52) !important;     /* slightly darker */
+  box-shadow: 0 16px 34px rgba(0,0,0,.32) !important;
+}
+.login-sub-card{
+  background: rgba(255,255,255,.12) !important;  /* frostier inner slab */
+  border: 1px solid rgba(255,255,255,.14) !important;
+}
+.login-btn{
+  background: #d18311 !important;                /* rich amber */
+  box-shadow: 0 8px 20px rgba(0,0,0,.28) !important;
+}
+
+/* 4) Micro layout nudges so the whole band feels balanced */
+.hero-title{ font-size: clamp(64px, 10.5vw, 156px) !important; }
+.hero-script{ top: -8px !important; left: clamp(7vw, 12.5vw, 23vw) !important; }
+.login-main{ top: clamp(20vh, 23vh, 26vh) !important; right: clamp(16px, 4.5vw, 72px) !important; }
+
+/* 5) Safety: make sure social row sits above background but below card */
+.home-social{ z-index: 3 !important; }

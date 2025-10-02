@@ -1,0 +1,236 @@
+/* =========================================
+   Booking Form — clean, compact, screenshot-accurate
+   ========================================= */
+
+:root{
+  --bk-glass: rgba(18,18,18,.55);
+  --bk-glass-2: rgba(26,26,26,.75);
+  --bk-ink: #f5f6f7;
+  --bk-muted: #c8ccd3;
+
+  --amber: #e9a560;
+  --amber-soft: rgba(233,165,96,.60);
+  --amber-deep: #d18b3f;
+
+  --ring: rgba(255,255,255,.18);
+  --shadow: rgba(0,0,0,.35);
+}
+
+/* Page shell */
+.bk-page{
+  min-height: 100dvh;
+  display: grid;
+  place-items: start center;
+  padding: 18px 10px;
+  color: var(--bk-ink);
+}
+
+/* Container and frosted frame */
+.bk-container{ width: min(1040px, 92vw); }
+.bk-frame{
+  background: linear-gradient(180deg, var(--bk-glass), var(--bk-glass-2));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid var(--amber-soft);
+  border-radius: 16px;
+  box-shadow: 0 12px 30px var(--shadow);
+  padding: 14px;
+  max-height: 92vh;            /* fit in a single viewport */
+}
+
+/* Header */
+.bk-header{ padding: 6px 6px 10px; }
+.bk-title{ margin: 0 0 4px; font-size: clamp(20px,2vw,24px); font-weight: 700; letter-spacing:.3px; }
+.bk-sub{ margin: 0; color: var(--bk-muted); font-size: .9rem; }
+
+/* ======= GRID ======= */
+.bk-grid{
+  display: grid;
+  grid-template-columns: 1.05fr 1.05fr .9fr;    /* right column a bit narrower */
+  grid-template-areas:
+    "personal contact emergency"
+    "driving  vehicle  safety"
+    "medical  medical  submit";
+  gap: 12px 14px;
+  align-items: start;
+  max-height: calc(92vh - 48px);               /* header allowance */
+}
+
+.bk-grid > [data-area="personal"]  { grid-area: personal; }
+.bk-grid > [data-area="driving"]   { grid-area: driving; }
+.bk-grid > [data-area="medical"]   { grid-area: medical; }
+.bk-grid > [data-area="contact"]   { grid-area: contact; }
+.bk-grid > [data-area="vehicle"]   { grid-area: vehicle; }
+.bk-grid > [data-area="emergency"] { grid-area: emergency; }
+.bk-grid > [data-area="safety"]    { grid-area: safety; }
+.bk-grid > [data-area="submit"]    { grid-area: submit; justify-self:center; align-self:center; }
+
+/* Cards */
+.bk-card{
+  background: linear-gradient(180deg, rgba(20,20,20,.55), rgba(20,20,20,.35));
+  border: 2px solid var(--amber);
+  border-radius: 16px;
+  padding: 12px 12px 14px;
+  box-shadow: 0 6px 18px var(--shadow);
+  overflow: hidden; /* prevent rounded-corner bleed */
+}
+
+/* Titles inside cards */
+.bk-card-title{
+  margin: 0 0 8px;
+  font-size: .95rem;
+  font-weight: 800;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+
+/* Two-up rows in a card */
+.bk-row2{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 10px;
+}
+
+/* Labels & inputs inline */
+.bk-label{
+  display: grid;
+  grid-template-columns: max-content 1fr; /* label | input */
+  align-items: center;
+  column-gap: 10px;
+  margin: 2px 0 6px;
+  font-size: .88rem;
+}
+
+/* Inputs/textarea — borderless, compact, glowing focus */
+.bk-input, .bk-textarea{
+  width: 100%;
+  margin-top: 4px;
+  padding: 7px 10px;
+  font-size: .9rem;
+  line-height: 1.25;
+  color: #fff;
+  background: rgba(255,255,255,.08);
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  transition: background .2s ease, box-shadow .2s ease;
+}
+.bk-input:focus, .bk-textarea:focus{
+  background: rgba(255,255,255,.12);
+  box-shadow: 0 0 0 2px rgba(233,165,96,.35);
+}
+.bk-input::placeholder, .bk-textarea::placeholder{ color:#b7bcc6; }
+.bk-textarea{ min-height: 80px; padding-top: 8px; resize: vertical; }
+
+/* Off-road chips */
+.bk-asterisk{ color: var(--amber); margin-left: 4px; }
+.bk-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.bk-chips input[type="radio"]{ position:absolute; inset:0; opacity:0; pointer-events:none; }
+.bk-chip{
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--amber);
+  background: rgba(233,165,96,.12);
+  color: #fff;
+  font-size: .84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .12s ease, background .2s ease, box-shadow .2s ease;
+}
+.bk-chips input[type="radio"]:checked + .bk-chip{
+  background: var(--amber);
+  color: #1a1a1a;
+  box-shadow: 0 4px 12px rgba(233,165,96,.35);
+}
+.bk-chip:active{ transform: translateY(1px); }
+
+/* Safety Yes/No row */
+.bk-yn{
+  display: grid;
+  grid-template-columns: 1fr auto; /* label | toggle */
+  align-items: center;
+  gap: 6px 8px;
+  margin: 2px 0;
+}
+.bk-yn-label{ font-size: .88rem; }
+
+/* Segmented toggle */
+.bk-toggle{
+  display: inline-grid;
+  grid-auto-flow: column;
+  gap: 0;
+  background: #6a4a2a;
+  border: 1px solid #7b542d;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.bk-toggle input[type="radio"]{ position:absolute; opacity:0; pointer-events:none; }
+.bk-toggle-btn{
+  min-width: 56px;
+  padding: 6px 12px;
+  text-align: center;
+  font-size: .86rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: #fff;
+  background: transparent;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.bk-toggle input[type="radio"]:checked + .bk-toggle-btn{
+  background: var(--amber);
+  color: #1a1a1a;
+}
+
+/* Submit */
+.bk-actions{ display:flex; align-items:center; justify-content:center; }
+.bk-submit{
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  width: 220px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: var(--amber);
+  color: #1a1a1a;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  font-size: .95rem;
+  box-shadow: 0 10px 26px rgba(233,165,96,.35), 0 3px 0 var(--amber-deep) inset;
+  transition: transform .12s ease, box-shadow .2s ease, filter .2s ease;
+}
+.bk-submit:hover{ filter:brightness(1.05); box-shadow:0 12px 28px rgba(233,165,96,.42), 0 3px 0 var(--amber-deep) inset; }
+.bk-submit:active{ transform: translateY(1px); }
+
+/* Date icon visible on dark bg */
+.bk-input[type="date"]::-webkit-calendar-picker-indicator{ filter: invert(1) opacity(.85); }
+
+/* ======= RESPONSIVE ======= */
+@media (max-width: 1100px){
+  .bk-grid{
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "personal contact"
+      "driving  vehicle"
+      "emergency safety"
+      "medical  medical"
+      "submit   submit";
+  }
+}
+@media (max-width: 720px){
+  .bk-container{ width: min(640px, 94vw); }
+  .bk-grid{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "personal"
+      "contact"
+      "emergency"
+      "driving"
+      "vehicle"
+      "safety"
+      "medical"
+      "submit";
+  }
+  .bk-row2{ grid-template-columns: 1fr; }
+  .bk-submit{ width: 100%; }
+}

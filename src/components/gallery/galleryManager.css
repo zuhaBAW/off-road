@@ -1,0 +1,55 @@
+.gallery-manager {
+  padding: 2rem;
+  background-color: #000;
+  min-height: 100vh;
+  color: white;
+}
+
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.album-card {
+  position: relative;
+  cursor: pointer;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.album-card:hover {
+  transform: scale(1.05);
+}
+
+.album-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.album-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.6);
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 9999;
+  padding: 10px 16px;
+  background: rgba(255, 140, 0, 0.9);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}

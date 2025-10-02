@@ -1,0 +1,167 @@
+
+/* Basic Carousel Styling */
+.image-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 15px;
+  padding: 15px 0;
+  width: 100%;
+  max-width: 1200px;  /* 🔥 You can remove this */
+}
+
+
+.carousel-item {
+  flex-shrink: 0; 
+  width: 300px;
+  height: 200px; 
+  object-fit: cover; 
+  border-radius: 8px;
+  scroll-snap-align: center;
+}
+
+
+.carousel-wrapper-in-explore {
+  position: relative;
+  width: 100%;
+}
+
+.explore-right .back-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 5;
+  background: rgba(255, 140, 0, 0.9);
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+
+/* full-bleed background */
+.explore-section{
+  position: relative;
+  min-height: 92vh;
+  color: #fff;
+  isolation: isolate;
+
+  /* 2 background layers:
+     1) dark veil
+     2) actual image we want to position precisely */
+  background-image:
+    linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)),
+    var(--explore-bg);
+  background-repeat: no-repeat, no-repeat;
+  background-size: auto, cover;             
+}
+
+
+/* 2-column canvas: title left, photos right */
+.explore-inner{
+  width:min(1200px,94vw);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns: 30% 70%; 
+    /* left title / right images */
+  gap:clamp(20px,4vw,48px);
+  align-items:start;                    /* keep title at top-left */
+  padding-block:clamp(32px,6vh,64px);
+}
+
+/* left column: headline */
+.explore-left{ text-align:left; }
+
+.explore-title{
+  font-family: 'SGlitch';
+  color: #f9aa32; /* Orange-ish color from image */
+  margin-bottom: 20px;
+  font-weight: bold;
+  margin:0;
+  /* font-family:"SGlitch",sans-serif; */
+  font-weight:200;
+  font-size:clamp(56px,9.5vw,140px);
+  line-height:.9;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  text-shadow:0 3px 18px rgba(0,0,0,.55);
+}
+.explore-subtitle{
+  margin: clamp(6px,1vw,12px) 0 0;
+  font-family:"Garland","Kaushan Script",cursive;
+  font-weight:200;
+  font-size:clamp(28px,4.2vw,64px);
+  line-height:1;
+  color:#fff;
+  text-shadow:0 4px 20px rgba(0,0,0,.6);
+  white-space:nowrap;
+}
+
+/* right column: two tall photos in a row (horizontal) */
+.explore-right {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 3vw, 28px);
+  margin-left: clamp(20px, 3vw, 40px); /* ✅ Pushes it more to the right */
+}
+.carousel-wrapper-in-explore {
+  position: fixed; /* ⬅ makes it float above everything */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh; /* or use 75vh for 3/4 height */
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.carousel-wrapper-in-explore .back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10000;
+  padding: 10px 16px;
+  background: rgba(255, 140, 0, 0.9);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+
+.explore-card{
+  border:2px solid  #f9aa32;;
+  background:rgba(0,0,0,.18);
+  padding:clamp(6px,.8vw,10px);        /* thin inner frame */
+}
+.explore-card img{
+  display:block;
+  width:100%;
+ --bgx: "68%";
+
+height: calc(clamp(360px, 52vh, 640px) * 1.5);
+    
+  object-fit:cover;
+}
+
+/* mobile: stack with title first, photos become two columns or single */
+@media (max-width:900px){
+  .explore-inner{ grid-template-columns:1fr; }
+  .explore-left{ text-align:center; }
+  .explore-right{ grid-template-columns: 1fr 1fr; }
+}
+@media (max-width:560px){
+  .explore-right{ grid-template-columns:1fr; } /* one per row on very small screens */
+}
+@media (max-width: 700px){
+  .explore-section::before{
+    background-size: cover;
+    background-position: center;
+  }
+}

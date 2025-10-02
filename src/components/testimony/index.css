@@ -1,0 +1,149 @@
+/* Page base */
+.t-wrapper {
+  background: #0b0b0b; /* deep black */
+  padding: 48px 24px 80px;
+  color: #e6e6e6;
+}
+
+/* Title */
+.t-title {
+  font-size: clamp(56px, 12vw, 160px);
+  line-height: 0.9;
+  text-align: center;
+  font-family: "SGlitch", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: #e9971c;
+  font-weight: 200;
+  letter-spacing: 0.02em;
+  margin: 0 0 28px;
+}
+
+/* Two-column row */
+.t-row {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr; /* closer ratio */
+  gap: clamp(12px, 2vw, 32px);       /* reduce gap between photo and text */
+  align-items: center;
+  position: relative; /* for carousel buttons */
+}
+
+/* Photo frame (fixed size with border) */
+.t-photoFrame {
+  border: 2px solid #e9971c;
+  padding: clamp(8px, 1.2vw, 12px);
+   margin-left: 35px; 
+  background: transparent;
+  width: 400px;          /* fixed width */
+  height: 460px;         /* fixed height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;      /* prevent overflow */
+}
+
+.t-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;     /* keeps image nicely cropped */
+  filter: contrast(1.05) brightness(0.95);
+}
+
+/* Right column – quote block */
+.t-quote {
+  max-width: 900px;
+}
+
+.t-quoteText {
+  position: relative;
+  font-family: "MontserratLight", "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: clamp(18px, 2.1vw, 28px);
+  line-height: 1.7;
+  color: #dcdcdc;
+  margin: 0 0 22px;
+}
+
+/* Big decorative quote marks */
+.t-qMark {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  display: inline-block;
+  line-height: 0.5;
+  vertical-align: -0.35em;
+  color: #ffffff;
+  opacity: 0.9;
+}
+
+.t-qOpen { font-size: clamp(34px, 4vw, 56px); margin-right: 10px; }
+.t-qClose { font-size: clamp(34px, 4vw, 56px); margin-left: 6px; }
+
+/* Thin divider under quote */
+.t-divider {
+  display: block;
+  width: clamp(60px, 8vw, 120px);
+  height: 3px;
+  background: #e1e1e1;
+  margin: 14px 0 18px;
+  opacity: 0.85;
+}
+
+/* Author line */
+.t-author {
+  margin: 0;
+  font-size: clamp(16px, 1.6vw, 22px);
+  letter-spacing: 0.01em;
+}
+
+.t-name {
+  color: #e9971c;
+  font-weight: 800;
+}
+
+.t-role {
+  color: #e3b170;
+  font-weight: 600;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 920px) {
+  .t-row {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+  .t-photoFrame {
+    width: 320px;
+    height: 380px;
+  }
+  .t-quote { max-width: 760px; }
+  .t-divider { margin: 14px auto 18px; }
+}
+
+/* Carousel buttons */
+.t-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 2;
+}
+
+.t-btn:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.t-btnPrev {
+  left: -60px; /* adjust spacing */
+}
+
+.t-btnNext {
+  right: -60px;
+}

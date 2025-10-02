@@ -1,0 +1,91 @@
+/* ========= App.css (clean) ========= */
+
+/* Fonts */
+@font-face {
+  font-family: 'SGlitch';
+  src: url('./assets/fonts/SdglitchdemoRegular-YzROj.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Garland';
+  src: url('./assets/fonts/Garland-ywX4e.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MontserratLight';
+  src: url('./assets/fonts/Montserrat-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Kollegan';
+  src: url('./assets/fonts/Kollegan.otf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Base reset */
+html, #root { height: 100%; width: 100%; margin: 0; padding: 0; max-width: 100%; overflow-x: clip; }
+body{ margin: 0; min-width: 320px; min-height: 100vh; }
+
+/* DO NOT style .home-section / .navbar / .hero here.
+   Those live in each page’s own CSS to avoid collisions. */
+
+/* ---------- Social bar (shared) ---------- */
+.home-section { position: relative; } /* just positioning hook */
+
+.home-social{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 24px;
+  width: min(1200px, 96vw);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px;
+  z-index: 2;
+}
+
+.social-link{
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+}
+
+.social-text{
+  color: #fff;
+  font-weight: 300;
+  letter-spacing: .02em;
+  font-size: clamp(12px, 2vw, 22px);
+}
+
+.social-action{
+  padding: 8px;
+  aspect-ratio: 1 / 1;
+  color: #f59e0b;
+  background: rgba(0,0,0,.45);
+  border: 1px solid #f59e0b;
+  box-shadow: inset 0 0 0 2px rgba(245,158,11,.18);
+  border-radius: 999px;
+  transition: transform .15s ease, opacity .15s ease;
+}
+.social-link:hover .social-action{ transform: translateY(-1px); opacity: .95; }
+
+@media (max-width: 900px){
+  .home-social{ bottom: 16px; width: 94vw; }
+  .social-text{ font-size: clamp(14px, 3.6vw, 20px); }
+}
+
+/* ---------- (Optional) Subtle mobile filter for background imagery ---------- */
+@media (max-width: 768px){
+  /* If you want this, scope it per-page instead to avoid surprises */
+  /* .home-section{ filter: grayscale(22%) sepia(30%) hue-rotate(-6deg) saturate(115%) contrast(112%) brightness(106%); } */
+}
