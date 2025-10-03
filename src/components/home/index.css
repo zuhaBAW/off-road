@@ -155,9 +155,11 @@ body{ margin: 0; min-width: 320px; color: var(--ink); }
 /* Right: Login card */
 .login-main{
   position: absolute;
-  right: 0;
+  right:0;
+  margin-top: -80px;
   top: clamp(18vh, 22vh, 26vh);
   z-index: 4;
+  /* margin-bottom: 20px; */
 }
 .login-card{
   width: clamp(300px, 22vw, 380px);

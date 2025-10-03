@@ -1,235 +1,168 @@
-/* =========================================
-   Booking Form — clean, compact, screenshot-accurate
-   ========================================= */
-
+/* =============== Tokens =============== */
 :root{
-  --bk-glass: rgba(18,18,18,.55);
-  --bk-glass-2: rgba(26,26,26,.75);
-  --bk-ink: #f5f6f7;
-  --bk-muted: #c8ccd3;
-
-  --amber: #e9a560;
-  --amber-soft: rgba(233,165,96,.60);
-  --amber-deep: #d18b3f;
-
-  --ring: rgba(255,255,255,.18);
-  --shadow: rgba(0,0,0,.35);
+  --bk-ink: #f4f6f8;
+  --bk-muted:#c9cdd4;
+  --bk-amber:#e9a560;
+  --bk-amber-700:#d18b3f;
+  --bk-glass: rgba(20,20,20,.55);
+  --bk-glass-strong: rgba(25,25,25,.75);
+  --bk-stroke: rgba(233,165,96,.65);
+  --bk-shadow: rgba(0,0,0,.4);
 }
 
-/* Page shell */
+/* =============== Shell =============== */
 .bk-page{
-  min-height: 100dvh;
-  display: grid;
-  place-items: start center;
-  padding: 18px 10px;
-  color: var(--bk-ink);
+  display:grid;
+  place-items:start center;
+  padding:18px 12px;
+  color:var(--bk-ink);
 }
 
-/* Container and frosted frame */
-.bk-container{ width: min(1040px, 92vw); }
+.bk-container{ width:min(1240px, 96vw); }
+
 .bk-frame{
-  background: linear-gradient(180deg, var(--bk-glass), var(--bk-glass-2));
+  border:1px solid var(--bk-stroke);
+  border-radius:18px;
+  background:linear-gradient(180deg,var(--bk-glass),var(--bk-glass-strong));
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  border: 1px solid var(--amber-soft);
-  border-radius: 16px;
-  box-shadow: 0 12px 30px var(--shadow);
-  padding: 14px;
-  max-height: 92vh;            /* fit in a single viewport */
+  padding:16px;
+  box-shadow:0 20px 40px var(--bk-shadow);
 }
 
-/* Header */
-.bk-header{ padding: 6px 6px 10px; }
-.bk-title{ margin: 0 0 4px; font-size: clamp(20px,2vw,24px); font-weight: 700; letter-spacing:.3px; }
-.bk-sub{ margin: 0; color: var(--bk-muted); font-size: .9rem; }
+/* =============== Header & Alerts =============== */
+.bk-header{ padding:4px 6px 12px; }
+.bk-title{ margin:0; font-size:clamp(22px,2.2vw,28px); font-weight:800; }
+.bk-sub{ margin:2px 0 0; color:var(--bk-muted); }
 
-/* ======= GRID ======= */
+.bk-alert{
+  margin-top:10px; padding:10px 12px; border-radius:10px; font-weight:600;
+}
+.bk-alert-success{ background:rgba(55,208,123,.18); border:1px solid rgba(55,208,123,.45); }
+.bk-alert-error{ background:rgba(255,83,83,.16); border:1px solid rgba(255,83,83,.45); }
+
+/* =============== Grid Layout (Driving restored) =============== */
 .bk-grid{
-  display: grid;
-  grid-template-columns: 1.05fr 1.05fr .9fr;    /* right column a bit narrower */
+  display:grid;
+  grid-template-columns: 1.05fr 1.05fr .9fr;
   grid-template-areas:
-    "personal contact emergency"
-    "driving  vehicle  safety"
-    "medical  medical  submit";
-  gap: 12px 14px;
-  align-items: start;
-  max-height: calc(92vh - 48px);               /* header allowance */
+    "account  contact   emergency"
+    "personal driving   safety"
+    "vehicle  vehicle   safety"
+    "medical  medical   actions";
+  gap:14px 16px;
+  align-items:start;
 }
 
-.bk-grid > [data-area="personal"]  { grid-area: personal; }
-.bk-grid > [data-area="driving"]   { grid-area: driving; }
-.bk-grid > [data-area="medical"]   { grid-area: medical; }
-.bk-grid > [data-area="contact"]   { grid-area: contact; }
-.bk-grid > [data-area="vehicle"]   { grid-area: vehicle; }
-.bk-grid > [data-area="emergency"] { grid-area: emergency; }
-.bk-grid > [data-area="safety"]    { grid-area: safety; }
-.bk-grid > [data-area="submit"]    { grid-area: submit; justify-self:center; align-self:center; }
+/* Area class hooks (use explicit classnames in JSX) */
+.account  { grid-area: account;  }
+.personal { grid-area: personal; }
+.driving  { grid-area: driving;  }
+.contact  { grid-area: contact;  }
+.vehicle  { grid-area: vehicle;  }
+.emergency{ grid-area: emergency;}
+.safety   { grid-area: safety;   }
+.medical  { grid-area: medical;  }
+.bk-actions{ grid-area: actions; display:flex; justify-content:center; align-items:center; }
 
 /* Cards */
 .bk-card{
-  background: linear-gradient(180deg, rgba(20,20,20,.55), rgba(20,20,20,.35));
-  border: 2px solid var(--amber);
-  border-radius: 16px;
-  padding: 12px 12px 14px;
-  box-shadow: 0 6px 18px var(--shadow);
-  overflow: hidden; /* prevent rounded-corner bleed */
+  background:linear-gradient(180deg, rgba(20,20,20,.55), rgba(20,20,20,.35));
+  border:1.5px solid var(--bk-amber);
+  border-radius:16px;
+  padding:12px;
+  box-shadow:0 10px 22px var(--bk-shadow);
 }
-
-/* Titles inside cards */
 .bk-card-title{
-  margin: 0 0 8px;
-  font-size: .95rem;
-  font-weight: 800;
-  letter-spacing: .3px;
-  text-transform: uppercase;
+  margin:0 0 8px;
+  font-size:.95rem; font-weight:800; letter-spacing:.3px; text-transform:uppercase;
 }
 
-/* Two-up rows in a card */
-.bk-row2{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 10px;
-}
-
-/* Labels & inputs inline */
+/* Labels & fields (compact inline) */
 .bk-label{
-  display: grid;
-  grid-template-columns: max-content 1fr; /* label | input */
-  align-items: center;
-  column-gap: 10px;
-  margin: 2px 0 6px;
-  font-size: .88rem;
+  display:grid;
+  grid-template-columns:max-content 1fr;
+  align-items:center;
+  column-gap:10px;
+  margin:4px 0 6px;
+  font-size:.9rem;
 }
+.bk-asterisk{ color:var(--bk-amber); margin-left:4px; }
 
-/* Inputs/textarea — borderless, compact, glowing focus */
 .bk-input, .bk-textarea{
-  width: 100%;
-  margin-top: 4px;
-  padding: 7px 10px;
-  font-size: .9rem;
-  line-height: 1.25;
-  color: #fff;
-  background: rgba(255,255,255,.08);
-  border: none;
-  border-radius: 8px;
-  outline: none;
+  width:100%; box-sizing:border-box;
+  background:rgba(255,255,255,.08);
+  border:none; border-radius:10px;
+  padding:8px 10px; color:#fff; font-size:.92rem; line-height:1.25;
   transition: background .2s ease, box-shadow .2s ease;
 }
 .bk-input:focus, .bk-textarea:focus{
-  background: rgba(255,255,255,.12);
-  box-shadow: 0 0 0 2px rgba(233,165,96,.35);
+  background:rgba(255,255,255,.12);
+  box-shadow:0 0 0 2px rgba(233,165,96,.35);
+  outline:none;
 }
-.bk-input::placeholder, .bk-textarea::placeholder{ color:#b7bcc6; }
-.bk-textarea{ min-height: 80px; padding-top: 8px; resize: vertical; }
+.bk-textarea{ min-height: 80px; padding-top: 7px; }
+
+.bk-row2{ display:grid; grid-template-columns:1fr 1fr; gap:8px 10px; }
 
 /* Off-road chips */
-.bk-asterisk{ color: var(--amber); margin-left: 4px; }
 .bk-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
 .bk-chips input[type="radio"]{ position:absolute; inset:0; opacity:0; pointer-events:none; }
 .bk-chip{
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--amber);
-  background: rgba(233,165,96,.12);
-  color: #fff;
-  font-size: .84rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform .12s ease, background .2s ease, box-shadow .2s ease;
+  user-select:none; cursor:pointer; padding:6px 10px; border-radius:999px;
+  border:1px solid var(--bk-amber); background:rgba(233,165,96,.12);
+  font-size:.86rem; font-weight:700;
 }
 .bk-chips input[type="radio"]:checked + .bk-chip{
-  background: var(--amber);
-  color: #1a1a1a;
-  box-shadow: 0 4px 12px rgba(233,165,96,.35);
+  background:var(--bk-amber); color:#1a1a1a; box-shadow:0 4px 12px rgba(233,165,96,.35);
 }
-.bk-chip:active{ transform: translateY(1px); }
 
-/* Safety Yes/No row */
-.bk-yn{
-  display: grid;
-  grid-template-columns: 1fr auto; /* label | toggle */
-  align-items: center;
-  gap: 6px 8px;
-  margin: 2px 0;
-}
-.bk-yn-label{ font-size: .88rem; }
-
-/* Segmented toggle */
-.bk-toggle{
-  display: inline-grid;
-  grid-auto-flow: column;
-  gap: 0;
-  background: #6a4a2a;
-  border: 1px solid #7b542d;
-  border-radius: 10px;
-  overflow: hidden;
-}
-.bk-toggle input[type="radio"]{ position:absolute; opacity:0; pointer-events:none; }
-.bk-toggle-btn{
-  min-width: 56px;
-  padding: 6px 12px;
-  text-align: center;
-  font-size: .86rem;
-  font-weight: 800;
-  letter-spacing: .2px;
-  color: #fff;
-  background: transparent;
-  cursor: pointer;
-  transition: background .18s ease, color .18s ease;
-}
-.bk-toggle input[type="radio"]:checked + .bk-toggle-btn{
-  background: var(--amber);
-  color: #1a1a1a;
-}
+/* Safety radios (Yes/No) */
+.bk-yn{ display:grid; grid-template-columns: 1fr auto; align-items:center; gap:6px 8px; margin:2px 0; }
+.bk-yn-label{ font-size:.88rem; }
+.bk-toggle{ display:inline-flex; align-items:center; gap:14px; }
+.bk-toggle input[type="radio"]{ appearance:radio; width:14px; height:14px; }
+.bk-toggle-btn{ font-weight:700; }
 
 /* Submit */
-.bk-actions{ display:flex; align-items:center; justify-content:center; }
 .bk-submit{
-  appearance: none;
-  border: none;
-  cursor: pointer;
-  width: 220px;
-  padding: 12px 20px;
-  border-radius: 12px;
-  background: var(--amber);
-  color: #1a1a1a;
-  font-weight: 800;
-  letter-spacing: 1.6px;
-  font-size: .95rem;
-  box-shadow: 0 10px 26px rgba(233,165,96,.35), 0 3px 0 var(--amber-deep) inset;
-  transition: transform .12s ease, box-shadow .2s ease, filter .2s ease;
+  appearance:none; border:none; cursor:pointer;
+  background:var(--bk-amber); color:#1a1a1a; font-weight:900; letter-spacing:1.6px;
+  padding:12px 20px; border-radius:12px; width:min(220px, 60vw);
+  box-shadow:0 12px 26px rgba(233,165,96,.35), inset 0 3px 0 var(--bk-amber-700);
+  transition: transform .1s ease, box-shadow .2s ease, filter .2s ease;
 }
-.bk-submit:hover{ filter:brightness(1.05); box-shadow:0 12px 28px rgba(233,165,96,.42), 0 3px 0 var(--amber-deep) inset; }
-.bk-submit:active{ transform: translateY(1px); }
+.bk-submit:hover{ filter:brightness(1.05); box-shadow:0 14px 28px rgba(233,165,96,.42), inset 0 3px 0 var(--bk-amber-700); }
+.bk-submit:active{ transform:translateY(1px); }
 
-/* Date icon visible on dark bg */
-.bk-input[type="date"]::-webkit-calendar-picker-indicator{ filter: invert(1) opacity(.85); }
+/* Date indicator visible on dark */
+.bk-input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(1) opacity(.85); }
 
-/* ======= RESPONSIVE ======= */
+/* =============== Responsive =============== */
 @media (max-width: 1100px){
   .bk-grid{
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
-      "personal contact"
-      "driving  vehicle"
-      "emergency safety"
+      "account  contact"
+      "personal driving"
+      "vehicle  safety"
       "medical  medical"
-      "submit   submit";
+      "actions  actions";
   }
 }
 @media (max-width: 720px){
-  .bk-container{ width: min(640px, 94vw); }
   .bk-grid{
     grid-template-columns: 1fr;
     grid-template-areas:
-      "personal"
+      "account"
       "contact"
       "emergency"
+      "personal"
       "driving"
       "vehicle"
       "safety"
       "medical"
-      "submit";
+      "actions";
   }
   .bk-row2{ grid-template-columns: 1fr; }
   .bk-submit{ width: 100%; }

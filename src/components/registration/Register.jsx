@@ -1,33 +1,82 @@
-// src/components/register/BookingFormPage.jsx
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import "./register.css";
+import { createRegistration } from "../../api/registerApi";
 
-export default function BookingFormPage() {
+/**
+ * Matches your CURL payload exactly (field names + casing).
+ * POST target: http://localhost:1337/api/auth/local/register
+ *
+ * curl -X POST http://localhost:1337/api/auth/local/register \
+ *   -H "Content-Type: application/json" \
+ *   -d '{
+ *     "username": "testuser",
+ *     "email": "testuser@example.com",
+ *     "password": "TestPass123!",
+ *     "DOB": "1990-01-01",
+ *     "EmiratesID": "123456789012345",
+ *     "Nationality": "UAE",
+ *     "MobileNo": "+971500000000",
+ *     "LicenseExpiry": "2030-12-31",
+ *     "City": "Dubai",
+ *     "DriverLicenseNo": "DL123456",
+ *     "OffRoadLevel": "Intermediate",
+ *     "VehicalMakeModel": "Toyota Land Cruiser",
+ *     "Year": 2022,
+ *     "Color": "Black",
+ *     "Mods": "Lift kit, snorkel",
+ *     "PlateNo": "D12345",
+ *     "EmergencyContactName": "John Doe",
+ *     "EmergencyContactNo": "+971511111111",
+ *     "Relationship": "Friend",
+ *     "RecoveryGear": true,
+ *     "FireExt": true,
+ *     "FirstAidKit": true,
+ *     "Flag": true,
+ *     "Radio": false,
+ *     "RecoveryRope": true,
+ *     "AirCompressor": true,
+ *     "SpareTire": true,
+ *     "Medical": "No known conditions"
+ *   }'
+ */
+
+export default function RegistrationForm() {
   const currentYear = new Date().getFullYear();
+  const formRef = useRef(null);
 
   const [form, setForm] = useState({
+    // Auth (Strapi requires these)
+    username: "",
+    email: "",
+    password: "",
+
     // Personal
-    fullName: "",
+    fullName: "", // shown in UI only
     dob: "",
-    nationality: "",
     emiratesId: "",
+    nationality: "",
+
     // Contact
     mobile: "",
     city: "",
+
     // Driving
     licenseNo: "",
     licenseExpiry: "",
-    offroadLevel: "",
+    offroadLevel: "", // beginner|intermediate|expert (we’ll capitalize for payload)
+
     // Vehicle
     makeModel: "",
     year: currentYear,
     color: "",
     plateNo: "",
     mods: "",
+
     // Emergency
     emerName: "",
     emerPhone: "",
     emerRelation: "",
+
     // Safety (yes/no)
     recGear: "",
     fireExt: "",
@@ -37,21 +86,116 @@ export default function BookingFormPage() {
     recRope: "",
     airComp: "",
     spareTire: "",
+
     // Medical
     medical: "",
   });
+
+  const [submitting, setSubmitting] = useState(false);
+  const [msg, setMsg] = useState({ type: "", text: "" });
 
   const setField = (e) => {
     const { name, value } = e.target;
     setForm((s) => ({ ...s, [name]: value }));
   };
 
-  const submit = (e) => {
+  // helpers
+  const ynToBool = (v) => (v === "yes" ? true : v === "no" ? false : null);
+  const emptyToNull = (v) => (v === "" ? null : v);
+  const cap1 = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
+  // EXACT payload that Strapi route expects
+  const buildPayload = () => ({
+    username: form.username,
+    email: form.email,
+    password: form.password,
+
+    DOB: emptyToNull(form.dob),
+    EmiratesID: emptyToNull(form.emiratesId),
+    Nationality: emptyToNull(form.nationality),
+    MobileNo: emptyToNull(form.mobile),
+    LicenseExpiry: emptyToNull(form.licenseExpiry),
+    City: emptyToNull(form.city),
+    DriverLicenseNo: emptyToNull(form.licenseNo),
+
+    OffRoadLevel: emptyToNull(cap1(form.offroadLevel)), // Beginner|Intermediate|Expert
+
+    VehicalMakeModel: emptyToNull(form.makeModel),
+    Year: form.year === "" ? null : Number(form.year),
+    Color: emptyToNull(form.color),
+    Mods: emptyToNull(form.mods),
+    PlateNo: emptyToNull(form.plateNo),
+
+    EmergencyContactName: emptyToNull(form.emerName),
+    EmergencyContactNo: emptyToNull(form.emerPhone),
+    Relationship: emptyToNull(form.emerRelation),
+
+    RecoveryGear: ynToBool(form.recGear),
+    FireExt: ynToBool(form.fireExt),
+    FirstAidKit: ynToBool(form.firstAid),
+    Flag: ynToBool(form.flag),
+    Radio: ynToBool(form.radio),
+    RecoveryRope: ynToBool(form.recRope),
+    AirCompressor: ynToBool(form.airComp),
+    SpareTire: ynToBool(form.spareTire),
+
+    Medical: emptyToNull(form.medical),
+  });
+
+  const submit = async (e) => {
     e.preventDefault();
-    // Browser required validations will handle the rest for now.
-    // You can wire your API here later.
-    console.log("Registration:", form);
-    alert("Submitted (check console)");
+
+    // Run native HTML5 validation (shows bubbles for any invalid field)
+    if (!formRef.current?.reportValidity()) return;
+
+    setMsg({ type: "", text: "" });
+    const payload = buildPayload();
+
+    try {
+      setSubmitting(true);
+      await createRegistration(payload);
+      setMsg({ type: "success", text: "Registration submitted successfully!" });
+
+      // Keep auth identity; clear the rest (also clear password).
+      setForm((s) => ({
+        ...s,
+        password: "",
+        fullName: "",
+        dob: "",
+        emiratesId: "",
+        nationality: "",
+        mobile: "",
+        city: "",
+        licenseNo: "",
+        licenseExpiry: "",
+        offroadLevel: "",
+        makeModel: "",
+        year: currentYear,
+        color: "",
+        plateNo: "",
+        mods: "",
+        emerName: "",
+        emerPhone: "",
+        emerRelation: "",
+        recGear: "",
+        fireExt: "",
+        firstAid: "",
+        flag: "",
+        radio: "",
+        recRope: "",
+        airComp: "",
+        spareTire: "",
+        medical: "",
+      }));
+    } catch (err) {
+      const text =
+        err?.error?.message ||
+        err?.message ||
+        "Failed to submit registration. Check server/CORS.";
+      setMsg({ type: "error", text });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -61,14 +205,124 @@ export default function BookingFormPage() {
           <header className="bk-header">
             <h1 className="bk-title">Register your details</h1>
             <p className="bk-sub">Please complete all fields</p>
+            {msg.text ? (
+              <div
+                className={`bk-alert ${
+                  msg.type === "error" ? "bk-alert-error" : "bk-alert-success"
+                }`}
+                role="alert"
+              >
+                {msg.text}
+              </div>
+            ) : null}
           </header>
 
-          {/* ===== GRID ===== */}
-          <form className="bk-grid" onSubmit={submit} noValidate>
-            {/* PERSONAL */}
-            <section className="bk-card" data-area="personal">
-              <h4 className="bk-card-title">Personal Information</h4>
+          <form ref={formRef} className="bk-grid" onSubmit={submit} noValidate>
+            {/* Account */}
+            <section className="bk-card account">
+              <h4 className="bk-card-title">Account</h4>
+              <label className="bk-label">
+                Username
+                <input
+                  className="bk-input"
+                  name="username"
+                  value={form.username}
+                  onChange={setField}
+                  required
+                  placeholder="yourname"
+                />
+              </label>
+              <label className="bk-label">
+                Email
+                <input
+                  className="bk-input"
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={setField}
+                  required
+                  placeholder="you@example.com"
+                />
+              </label>
+              <label className="bk-label">
+                Password
+                <input
+                  className="bk-input"
+                  type="password"
+                  name="password"
+                  value={form.password}
+                  onChange={setField}
+                  required
+                  placeholder="••••••••"
+                />
+              </label>
+            </section>
 
+            {/* Contact */}
+            <section className="bk-card contact">
+              <h4 className="bk-card-title">Contact Information</h4>
+              <label className="bk-label">
+                Mobile No.
+                <input
+                  className="bk-input"
+                  name="mobile"
+                  value={form.mobile}
+                  onChange={setField}
+                  required
+                  placeholder="+971 5x xxx xxxx"
+                />
+              </label>
+              <label className="bk-label">
+                City
+                <input
+                  className="bk-input"
+                  name="city"
+                  value={form.city}
+                  onChange={setField}
+                  required
+                  placeholder="Dubai"
+                />
+              </label>
+            </section>
+
+            {/* Emergency */}
+            <section className="bk-card emergency">
+              <h4 className="bk-card-title">Emergency Contact</h4>
+              <label className="bk-label">
+                Name
+                <input
+                  className="bk-input"
+                  name="emerName"
+                  value={form.emerName}
+                  onChange={setField}
+                  required
+                />
+              </label>
+              <label className="bk-label">
+                Contact No.
+                <input
+                  className="bk-input"
+                  name="emerPhone"
+                  value={form.emerPhone}
+                  onChange={setField}
+                  required
+                />
+              </label>
+              <label className="bk-label">
+                Relationship
+                <input
+                  className="bk-input"
+                  name="emerRelation"
+                  value={form.emerRelation}
+                  onChange={setField}
+                  required
+                />
+              </label>
+            </section>
+
+            {/* Personal */}
+            <section className="bk-card personal">
+              <h4 className="bk-card-title">Personal Information</h4>
               <label className="bk-label">
                 Full Name
                 <input
@@ -79,7 +333,6 @@ export default function BookingFormPage() {
                   required
                 />
               </label>
-
               <label className="bk-label">
                 Date of Birth
                 <input
@@ -91,7 +344,6 @@ export default function BookingFormPage() {
                   required
                 />
               </label>
-
               <label className="bk-label">
                 Nationality
                 <input
@@ -102,7 +354,6 @@ export default function BookingFormPage() {
                   required
                 />
               </label>
-
               <label className="bk-label">
                 Emirates ID No
                 <input
@@ -115,10 +366,9 @@ export default function BookingFormPage() {
               </label>
             </section>
 
-            {/* DRIVING */}
-            <section className="bk-card" data-area="driving">
+            {/* Driving (RESTORED) */}
+            <section className="bk-card driving">
               <h4 className="bk-card-title">Driving Details</h4>
-
               <label className="bk-label">
                 Driver’s License No.
                 <input
@@ -129,7 +379,6 @@ export default function BookingFormPage() {
                   required
                 />
               </label>
-
               <label className="bk-label">
                 License Expiry
                 <input
@@ -142,9 +391,9 @@ export default function BookingFormPage() {
                 />
               </label>
 
-              <div className="bk-label">
-                Off-Road Level<span className="bk-asterisk">*</span>
-                <div className="bk-chips">
+              <div className="bk-label" style={{ alignItems: "center" }}>
+                Off-Road Level <span className="bk-asterisk">*</span>
+                <div className="bk-chips" style={{ marginTop: 0 }}>
                   <input
                     id="lvl-beg"
                     type="radio"
@@ -187,51 +436,9 @@ export default function BookingFormPage() {
               </div>
             </section>
 
-            {/* MEDICAL */}
-            <section className="bk-card" data-area="medical">
-              <h4 className="bk-card-title">Medical Conditions</h4>
-              <textarea
-                className="bk-textarea"
-                name="medical"
-                value={form.medical}
-                onChange={setField}
-                required
-                placeholder="List any medical conditions / allergies"
-              />
-            </section>
-
-            {/* CONTACT */}
-            <section className="bk-card" data-area="contact">
-              <h4 className="bk-card-title">Contact Information</h4>
-
-              <label className="bk-label">
-                Mobile No.
-                <input
-                  className="bk-input"
-                  name="mobile"
-                  value={form.mobile}
-                  onChange={setField}
-                  required
-                  placeholder="+971 5x xxx xxxx"
-                />
-              </label>
-
-              <label className="bk-label">
-                City
-                <input
-                  className="bk-input"
-                  name="city"
-                  value={form.city}
-                  onChange={setField}
-                  required
-                />
-              </label>
-            </section>
-
-            {/* VEHICLE */}
-            <section className="bk-card" data-area="vehicle">
+            {/* Vehicle */}
+            <section className="bk-card vehicle">
               <h4 className="bk-card-title">Vehicle Information</h4>
-
               <label className="bk-label">
                 Make &amp; Model
                 <input
@@ -244,21 +451,20 @@ export default function BookingFormPage() {
                 />
               </label>
 
-              <label className="bk-label">
-                Year
-                <input
-                  type="number"
-                  min="1980"
-                  max={currentYear + 1}
-                  className="bk-input"
-                  name="year"
-                  value={form.year}
-                  onChange={setField}
-                  required
-                />
-              </label>
-
               <div className="bk-row2">
+                <label className="bk-label">
+                  Year
+                  <input
+                    type="number"
+                    min="1980"
+                    max={currentYear + 2}
+                    className="bk-input"
+                    name="year"
+                    value={form.year}
+                    onChange={setField}
+                    required
+                  />
+                </label>
                 <label className="bk-label">
                   Color
                   <input
@@ -269,7 +475,9 @@ export default function BookingFormPage() {
                     required
                   />
                 </label>
+              </div>
 
+              <div className="bk-row2">
                 <label className="bk-label">
                   Plate No.
                   <input
@@ -280,63 +488,23 @@ export default function BookingFormPage() {
                     required
                   />
                 </label>
+                <label className="bk-label">
+                  Mods
+                  <input
+                    className="bk-input"
+                    name="mods"
+                    value={form.mods}
+                    onChange={setField}
+                    required
+                    placeholder="Lift, tires, winch…"
+                  />
+                </label>
               </div>
-
-              <label className="bk-label">
-                Mods
-                <input
-                  className="bk-input"
-                  name="mods"
-                  value={form.mods}
-                  onChange={setField}
-                  required
-                  placeholder="Lift, tires, winch…"
-                />
-              </label>
             </section>
 
-            {/* EMERGENCY */}
-            <section className="bk-card" data-area="emergency">
-              <h4 className="bk-card-title">Emergency Contact</h4>
-
-              <label className="bk-label">
-                Name
-                <input
-                  className="bk-input"
-                  name="emerName"
-                  value={form.emerName}
-                  onChange={setField}
-                  required
-                />
-              </label>
-
-              <label className="bk-label">
-                Contact No.
-                <input
-                  className="bk-input"
-                  name="emerPhone"
-                  value={form.emerPhone}
-                  onChange={setField}
-                  required
-                />
-              </label>
-
-              <label className="bk-label">
-                Relationship
-                <input
-                  className="bk-input"
-                  name="emerRelation"
-                  value={form.emerRelation}
-                  onChange={setField}
-                  required
-                />
-              </label>
-            </section>
-
-            {/* SAFETY */}
-            <section className="bk-card" data-area="safety">
+            {/* Safety */}
+            <section className="bk-card safety">
               <h4 className="bk-card-title">Safety Equipment</h4>
-
               {[
                 ["recGear", "Recovery Gear"],
                 ["fireExt", "Fire Ext."],
@@ -348,8 +516,7 @@ export default function BookingFormPage() {
                 ["spareTire", "Spare Tire"],
               ].map(([key, label]) => (
                 <div className="bk-yn" key={key}>
-                  <span className="bk-yn-label">{label}:</span>
-
+                  <span className="bk-yn-label">{label}</span>
                   <div className="bk-toggle">
                     <input
                       id={`${key}-y`}
@@ -363,7 +530,6 @@ export default function BookingFormPage() {
                     <label htmlFor={`${key}-y`} className="bk-toggle-btn">
                       Yes
                     </label>
-
                     <input
                       id={`${key}-n`}
                       type="radio"
@@ -381,10 +547,23 @@ export default function BookingFormPage() {
               ))}
             </section>
 
-            {/* SUBMIT */}
-            <div className="bk-actions" data-area="submit">
-              <button type="submit" className="bk-submit">
-                SUBMIT
+            {/* Medical (wide + fills the gap) */}
+            <section className="bk-card medical">
+              <h4 className="bk-card-title">Medical Conditions</h4>
+              <textarea
+                className="bk-textarea"
+                name="medical"
+                value={form.medical}
+                onChange={setField}
+                required
+                placeholder="List any medical conditions / allergies"
+              />
+            </section>
+
+            {/* Submit — centered */}
+            <div className="bk-actions">
+              <button type="submit" className="bk-submit" disabled={submitting}>
+                {submitting ? "Submitting…" : "SUBMIT"}
               </button>
             </div>
           </form>

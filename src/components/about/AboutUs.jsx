@@ -177,7 +177,7 @@ const AboutUsWithCalendar = () => {
                   <div className="modal-actions">
                     <button
                       className="book-now-button"
-                      onClick={() => navigate(`/book?event=${ev.id}`)}
+                      // onClick={() => navigate(`/book?event=${ev.id}`)}
                     >
                       Book Now
                     </button>

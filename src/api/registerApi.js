@@ -1,30 +1,27 @@
-// /api/RegistrationApi.js
-const API_BASE = "http://localhost:1337";
+// Simple, robust POST to Strapi auth local register.
+// Returns the parsed JSON on success or throws on failure.
 
-/**
- * Create a Registration entry in Strapi.
- * - Endpoint assumes a collection type named "registration" (UID: api::registration.registration)
- * - If you named it "registrations", Strapi REST path is still /api/registrations.
- * - If protected, pass a JWT; we'll attach Authorization.
- */
-export async function createRegistration(exactPayload, jwt) {
-  const res = await fetch(`${API_BASE}/api/auth/local/register`, {
+export async function createRegistration(payload) {
+  const url = "http://localhost:1337/api/auth/local/register";
+
+  const res = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
-    },
-    body: JSON.stringify({ data: exactPayload }), // Strapi expects { data: ... }
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
-    let err;
+    let text = "";
     try {
-      err = await res.json();
+      text = await res.text();
     } catch {
-      err = { message: `HTTP ${res.status}` };
+      console.log('error')
     }
-    throw err;
+    throw new Error(
+      `Register failed (${res.status} ${res.statusText})` +
+        (text ? ` – ${text}` : "")
+    );
   }
-  return res.json(); // { data: { id, attributes } }
+
+  return res.json(); // Strapi typically returns { jwt, user } here
 }

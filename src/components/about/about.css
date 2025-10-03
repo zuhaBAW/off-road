@@ -108,11 +108,11 @@ html, body {
   border-radius: 12px;
   cursor: pointer;
 }
-.calendar-day.today {
+/* .calendar-day.today {
   background-color: #e09f3e;
   color: #1a1a1a;
   font-weight: bold;
-}
+} */
 .calendar-day.event-day {
   border: 2px solid #e09f3e;
   color: #e09f3e;
