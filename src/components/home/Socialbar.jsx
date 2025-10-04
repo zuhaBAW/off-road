@@ -7,9 +7,21 @@ import {
 } from "@tabler/icons-react";
 
 const items = [
-  { href: "#", label: "Link", Icon: IconBrandInstagram },
-  { href: "#", label: "Link", Icon: IconBrandFacebook },
-  { href: "#", label: "Link", Icon: IconBrandWhatsapp },
+  {
+    href: "https://www.instagram.com/offroadadda/?utm_source=qr&igsh=bDEza3Bmc2gyNjhl#",
+    label: "Instagram",
+    Icon: IconBrandInstagram,
+  },
+  {
+    href: "http://www.facebook.com/share/1WTny8ACun/",
+    label: "Facebook",
+    Icon: IconBrandFacebook,
+  },
+  // {
+  //   href: "#https://chat.whatsapp.com/ITulSmcpxnGFFGKNAbsOvN",
+  //   label: "WhatsApp",
+  //   Icon: IconBrandWhatsapp,
+  // },
 ];
 
 export default function SocialBar() {

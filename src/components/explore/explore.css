@@ -86,15 +86,17 @@
   font-size:clamp(56px,9.5vw,140px);
   line-height:.9;
   letter-spacing:.03em;
+  margin-left: -40px;
   text-transform:uppercase;
   text-shadow:0 3px 18px rgba(0,0,0,.55);
 }
 .explore-subtitle{
   margin: clamp(6px,1vw,12px) 0 0;
-  font-family:"Garland","Kaushan Script",cursive;
-  font-weight:200;
-  font-size:clamp(28px,4.2vw,64px);
+  font-family:"Kollegan",cursive;
+  font-weight:50 !important;
+  font-size:clamp(28px,3vw,64px);
   line-height:1;
+  margin-left: 60px;
   color:#fff;
   text-shadow:0 4px 20px rgba(0,0,0,.6);
   white-space:nowrap;

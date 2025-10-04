@@ -1,4 +1,4 @@
-/* ========= App.css (clean) ========= */
+/* ========= App.css (clean) =========
 
 /* Fonts */
 @font-face {
@@ -30,15 +30,14 @@
   font-display: swap;
 }
 
-/* Base reset */
-html, #root { height: 100%; width: 100%; margin: 0; padding: 0; max-width: 100%; overflow-x: clip; }
-body{ margin: 0; min-width: 320px; min-height: 100vh; }
+/* .home-content{
+  margin-top: 20px;
+} */
+/* html, #root { overflow-x: clip; } */
+/* body{ margin: 0; min-width: 320px; min-height: 100vh; } */
 
-/* DO NOT style .home-section / .navbar / .hero here.
-   Those live in each page’s own CSS to avoid collisions. */
 
-/* ---------- Social bar (shared) ---------- */
-.home-section { position: relative; } /* just positioning hook */
+/* .home-section { position: relative; } 
 
 .home-social{
   position: absolute;
@@ -50,6 +49,7 @@ body{ margin: 0; min-width: 320px; min-height: 100vh; }
   justify-content: space-between;
   align-items: center;
   margin: 20px;
+  margin-top: 20%;
   z-index: 2;
 }
 
@@ -83,9 +83,4 @@ body{ margin: 0; min-width: 320px; min-height: 100vh; }
   .home-social{ bottom: 16px; width: 94vw; }
   .social-text{ font-size: clamp(14px, 3.6vw, 20px); }
 }
-
-/* ---------- (Optional) Subtle mobile filter for background imagery ---------- */
-@media (max-width: 768px){
-  /* If you want this, scope it per-page instead to avoid surprises */
-  /* .home-section{ filter: grayscale(22%) sepia(30%) hue-rotate(-6deg) saturate(115%) contrast(112%) brightness(106%); } */
-}
+ */

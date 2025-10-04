@@ -6,24 +6,28 @@ import {
   IconCircleChevronRightFilled,
   IconX,
 } from "@tabler/icons-react";
-import { useNavigate } from "react-router-dom";
+import { isLoggedIn, getLoggedInUser } from "../../api/loginApi";
+import { bookEvent } from "../../api/auth";
 import { fetchEvents } from "../../api/fetchEvents"; // adjust path if needed
+import Banner from "./Banner";
 
 const AboutUsWithCalendar = () => {
   const today = new Date();
-  const navigate = useNavigate();
 
   const [currentDate, setCurrentDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1)
   );
   const [events, setEvents] = useState({}); // { "2025-9-29": [eventObj, ...] }
   const [selectedEventDay, setSelectedEventDay] = useState(null); // { date: Date, events: [...] }
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [bookingDetails, setBookingDetails]=useState({Email:"",events:"",date:""})
+  // const []
 
   useEffect(() => {
     (async () => {
       const map = await fetchEvents();
       setEvents(map);
-
+  
       // move calendar to earliest event month if exists
       const keys = Object.keys(map || {});
       if (keys.length) {
@@ -38,7 +42,7 @@ const AboutUsWithCalendar = () => {
       }
     })();
   }, []);
-
+ console.log(events, "events");
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const monthName = currentDate.toLocaleString("default", { month: "long" });
@@ -50,159 +54,272 @@ const AboutUsWithCalendar = () => {
 
   const weekdays = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
-  const openDay = (date) => {
-    const key = `${date.getFullYear()}-${
-      date.getMonth() + 1
-    }-${date.getDate()}`;
-    const dayEvents = events[key] || [];
-    console.log("openDay", key, "->", dayEvents);
-    if (dayEvents.length) {
-      setSelectedEventDay({ date, events: dayEvents });
+
+const openDay = (date) => {
+  const key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+ 
+
+  const dayEvents = events[key] || [];
+
+  if (dayEvents.length > 0) {
+    console.log("✅ Found event(s):", dayEvents);
+    setSelectedEventDay({ date, events: dayEvents });
+  } else {
+    console.log("❌ No events found for this date.");
+  }
+};
+
+  // book now
+  const handleTopBookClick = () => {
+    if (!isLoggedIn()) {
+      alert("You need to login first!");
+     document.getElementById("home")?.scrollIntoView({ behavior: "smooth" });
+
+      return;
     }
+
+    // Find the first date that has events
+    const eventKeys = Object.keys(events).sort(
+      (a, b) => new Date(a) - new Date(b)
+    );
+
+    if (eventKeys.length === 0) {
+      alert("No events available to book yet!");
+      return;
+    }
+
+    const firstEventKey = eventKeys[0];
+    setSelectedEventDay({
+      date: new Date(firstEventKey),
+      events: events[firstEventKey],
+    });
   };
 
+
+  //  const handleBookClick = async (callback) => {
+  //    if (!isLoggedIn()) {
+  //      alert("You need to login first!");
+  //      setSelectedEventDay(null)
+  //     document.getElementById("home")?.scrollIntoView({ behavior: "smooth" });
+  //      return;
+
+  //    }
+
+  //    const user = getLoggedInUser();
+  //    if (!user) return;
+     
+  //   //  console.log(user, "user details");
+  //    callback(user);
+  //    console.log(bookingDetails,"details of bookingggggggg")
+  //    try {
+  //      await bookEvent(bookingDetails); // call the API
+  //      console.log(user,"user details ")
+  //      setConfirmationOpen(true); // show confirmation modal
+  //    } catch (err) {
+  //      alert("Booking failed: " + err.message);
+  //    }
+  //  };
+  
   return (
-    <div className="app-container">
+    <div id="about">
       {/* About Us */}
-      <div className="about-us-container">
-        <h1 className="about-us-title">ABOUT US</h1>
-        <p className="about-us-text">
-          More Than Off-Roading <br />
-          At Off-Road Adda, adventure goes beyond the trail — it's about the
-          people, the stories, and the shared moments that bring us together.
-        </p>
-        <button className="book-now-button" onClick={() => navigate("/book")}>
-          Book Now
-        </button>
+      <div className="banner">
+        <Banner data={events} />
       </div>
-
-      {/* Calendar */}
-      <div className="calendar-container">
-        <div className="calendar-header">
-          <IconCircleChevronLeftFilled onClick={prevMonth} />
-          <h2 className="calendar-month">
-            {monthName} {year}
-          </h2>
-          <IconCircleChevronRightFilled onClick={nextMonth} />
+      <div className="app-container">
+        <div className="about-us-container">
+          <h1 className="about-us-title">ABOUT US</h1>
+          <p className="about-us-text">
+            More Than Off-Roading <br />
+            At Off-Road Adda, adventure goes beyond the trail — it's about the
+            people, the stories, and the shared moments that bring us together.
+          </p>
+          <button className="book-now-button" onClick={handleTopBookClick}>
+            Register For Event
+          </button>
         </div>
 
-        <div className="calendar-grid">
-          {weekdays.map((day, i) => (
-            <div
-              key={i}
-              className={`weekday-header ${
-                day === "SAT" || day === "SUN" ? "weekend-header" : ""
-              }`}
-            >
-              {day}
-            </div>
-          ))}
-
-          {Array.from({ length: firstDayOffset }).map((_, i) => (
-            <div key={`empty-${i}`} className="empty-day" />
-          ))}
-
-          {Array.from({ length: daysInMonth }, (_, i) => {
-            const day = i + 1;
-            const date = new Date(year, month, day);
-            const key = `${year}-${month + 1}-${day}`;
-            const dayEvents = events[key] || [];
-            const hasEvent = dayEvents.length > 0;
-            const isToday =
-              day === today.getDate() &&
-              month === today.getMonth() &&
-              year === today.getFullYear();
-            const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-
-            return (
-              <div
-                key={day}
-                className={`calendar-day ${isToday ? "today" : ""} ${
-                  hasEvent ? "event-day" : ""
-                } ${isWeekend ? "weekend" : ""}`}
-                onClick={() => openDay(date)}
-                title={hasEvent ? dayEvents.map((e) => e.title).join(", ") : ""}
-              >
-                {String(day).padStart(2, "0")}
-                {hasEvent && <span className="event-dot" aria-hidden />}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Modal */}
-      {selectedEventDay && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <button
-              className="modal-close"
-              onClick={() => setSelectedEventDay(null)}
-            >
-              <IconX size={20} />
-            </button>
-
-            <h2 className="modal-title">
-              Events on{" "}
-              {selectedEventDay.date.toLocaleDateString(undefined, {
-                weekday: "long",
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
+        {/* Calendar */}
+        <div className="calendar-container">
+          <div className="calendar-header">
+            <IconCircleChevronLeftFilled onClick={prevMonth} />
+            <h2 className="calendar-month">
+              {monthName} {year}
             </h2>
+            <IconCircleChevronRightFilled onClick={nextMonth} />
+          </div>
 
-            {selectedEventDay.events.map((ev) => {
-              // safe date parsing fallback
-              const evDate =
-                ev.dateObj instanceof Date && !isNaN(ev.dateObj)
-                  ? ev.dateObj
-                  : ev.isoDate
-                  ? new Date(ev.isoDate)
-                  : null;
+          <div className="calendar-grid">
+            {weekdays.map((day, i) => (
+              <div
+                key={i}
+                className={`weekday-header ${
+                  day === "SAT" || day === "SUN" ? "weekend-header" : ""
+                }`}
+              >
+                {day}
+              </div>
+            ))}
 
-              const timeText =
-                evDate && !isNaN(evDate)
-                  ? evDate.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                  : ev.isoDate ?? "Time unavailable";
+            {Array.from({ length: firstDayOffset }).map((_, i) => (
+              <div key={`empty-${i}`} className="empty-day" />
+            ))}
+
+            {Array.from({ length: daysInMonth }, (_, i) => {
+              const day = i + 1;
+              const date = new Date(year, month, day);
+              const key = `${year}-${month + 1}-${day}`;
+              const dayEvents = events[key] || [];
+              const hasEvent = dayEvents.length > 0;
+              const isToday =
+                day === today.getDate() &&
+                month === today.getMonth() &&
+                year === today.getFullYear();
+              const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
               return (
-                <div key={ev.id} className="event-block">
-                  <h3 className="event-title">{ev.title}</h3>
-                  <p className="modal-text">📍 {ev.location}</p>
-                  <p className="modal-text">⏰ {timeText}</p>
-                  <div className="modal-actions">
-                    <button
-                      className="book-now-button"
-                      // onClick={() => navigate(`/book?event=${ev.id}`)}
-                    >
-                      Book Now
-                    </button>
-                  </div>
+                <div
+                  key={day}
+                  className={`calendar-day ${isToday ? "today" : ""} ${
+                    hasEvent ? "event-day" : ""
+                  } ${isWeekend ? "weekend" : ""}`}
+                  onClick={() => openDay(date)}
+                  title={
+                    hasEvent ? dayEvents.map((e) => e.title).join(", ") : ""
+                  }
+                >
+                  {String(day).padStart(2, "0")}
+                  {hasEvent && <span className="event-dot" aria-hidden />}
                 </div>
               );
             })}
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: 12,
-              }}
-            >
-              <button
-                className="cancel-button"
-                onClick={() => setSelectedEventDay(null)}
-              >
-                Close
-              </button>
-            </div>
           </div>
         </div>
-      )}
+
+        {/* Modal */}
+        {selectedEventDay && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <button
+                className="modal-close"
+                onClick={() => setSelectedEventDay(null)}
+              >
+                <IconX size={20} />
+              </button>
+
+              <h2 className="modal-title">
+                Events on{" "}
+                {selectedEventDay.date.toLocaleDateString(undefined, {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </h2>
+              {selectedEventDay.events.map((ev) => {
+                const evDate =
+                  ev.dateObj instanceof Date && !isNaN(ev.dateObj)
+                    ? ev.dateObj
+                    : ev.isoDate
+                    ? new Date(ev.isoDate)
+                    : null;
+
+                const timeText =
+                  evDate && !isNaN(evDate)
+                    ? evDate.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : ev.isoDate ?? "Time unavailable";
+
+                const handleRegisterClick = async () => {
+                  if (!isLoggedIn()) {
+                    alert("You need to login first!");
+                    setSelectedEventDay(null);
+                    document
+                      .getElementById("home")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                    return;
+                  }
+
+                  const user = getLoggedInUser();
+                  if (!user) return;
+
+                  const bookingPayload = {
+                    Email: user.email,
+                    EventDetails: ev.title,
+                    date:
+                      evDate instanceof Date
+                        ? evDate.toISOString().split("T")[0]
+                        : null,
+                  };
+
+                  setBookingDetails(bookingDetails);
+
+                  try {
+                    await bookEvent(bookingPayload);
+                    setConfirmationOpen(true);
+                  } catch (err) {
+                    alert("Booking failed: " + err.message);
+                  }
+                };
+
+                return (
+                  <div key={ev.id} className="event-block">
+                    <h3 className="event-title">{ev.title}</h3>
+                    <p className="modal-text">📍 {ev.location}</p>
+                    <p className="modal-text">⏰ {timeText}</p>
+                    <div className="modal-actions">
+                      <button
+                        className="book-now-button"
+                        onClick={handleRegisterClick}
+                      >
+                        Register
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {confirmationOpen && (
+                <div className="modal-confirmation">
+                  <div className="modal-content">
+                    <h2>Registration Confirmed!</h2>
+                    <p>You have successfully registered for the event.</p>
+                    <button
+                      onClick={() => {
+                        setConfirmationOpen(false)
+                             document
+                               .getElementById("home")
+                               ?.scrollIntoView({ behavior: "smooth" });
+                        setSelectedEventDay(null)
+
+                      }}
+                      className="cancel-button-1"
+                    >
+                      Back to Home
+                    </button>
+                  </div>
+                </div>
+              )}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: 12,
+                }}
+              >
+                <button
+                  className="cancel-button"
+                  onClick={() => setSelectedEventDay(null)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

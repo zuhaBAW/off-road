@@ -14,7 +14,7 @@ const AlbumPreviewCarousel = ({ albums, onAlbumClick }) => {
           <img
             src={album.images[0]}
             alt={album.name}
-            onError={(e) => (e.target.src = "/placeholder.jpg")}
+            // onError={(e) => (e.target.src = "/placeholder.jpg")}
           />
           <div className="album-preview-title">{album.name}</div>
         </div>

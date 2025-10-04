@@ -47,6 +47,7 @@ export default function Explore() {
 
   return (
     <section
+      id="services"
       className="explore-section"
       style={{ "--explore-bg": `url(${bgImg})` }}
     >

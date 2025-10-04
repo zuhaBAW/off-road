@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import "./register.css";
 import { createRegistration } from "../../api/registerApi";
-
+import { useNavigate } from "react-router-dom";
 /**
  * Matches your CURL payload exactly (field names + casing).
  * POST target: http://localhost:1337/api/auth/local/register
@@ -43,6 +43,7 @@ import { createRegistration } from "../../api/registerApi";
 export default function RegistrationForm() {
   const currentYear = new Date().getFullYear();
   const formRef = useRef(null);
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     // Auth (Strapi requires these)
@@ -53,7 +54,6 @@ export default function RegistrationForm() {
     // Personal
     fullName: "", // shown in UI only
     dob: "",
-    emiratesId: "",
     nationality: "",
 
     // Contact
@@ -61,8 +61,7 @@ export default function RegistrationForm() {
     city: "",
 
     // Driving
-    licenseNo: "",
-    licenseExpiry: "",
+   
     offroadLevel: "", // beginner|intermediate|expert (we’ll capitalize for payload)
 
     // Vehicle
@@ -111,12 +110,9 @@ export default function RegistrationForm() {
     password: form.password,
 
     DOB: emptyToNull(form.dob),
-    EmiratesID: emptyToNull(form.emiratesId),
     Nationality: emptyToNull(form.nationality),
     MobileNo: emptyToNull(form.mobile),
-    LicenseExpiry: emptyToNull(form.licenseExpiry),
     City: emptyToNull(form.city),
-    DriverLicenseNo: emptyToNull(form.licenseNo),
 
     OffRoadLevel: emptyToNull(cap1(form.offroadLevel)), // Beginner|Intermediate|Expert
 
@@ -154,6 +150,7 @@ export default function RegistrationForm() {
     try {
       setSubmitting(true);
       await createRegistration(payload);
+      
       setMsg({ type: "success", text: "Registration submitted successfully!" });
 
       // Keep auth identity; clear the rest (also clear password).
@@ -162,12 +159,9 @@ export default function RegistrationForm() {
         password: "",
         fullName: "",
         dob: "",
-        emiratesId: "",
         nationality: "",
         mobile: "",
         city: "",
-        licenseNo: "",
-        licenseExpiry: "",
         offroadLevel: "",
         makeModel: "",
         year: currentYear,
@@ -187,11 +181,11 @@ export default function RegistrationForm() {
         spareTire: "",
         medical: "",
       }));
+           navigate("/home");
+
     } catch (err) {
-      const text =
-        err?.error?.message ||
-        err?.message ||
-        "Failed to submit registration. Check server/CORS.";
+      console.log(err,"errror")
+      const text = "Registration failed. This email or username might already be in use.";
       setMsg({ type: "error", text });
     } finally {
       setSubmitting(false);
@@ -204,7 +198,7 @@ export default function RegistrationForm() {
         <div className="bk-frame">
           <header className="bk-header">
             <h1 className="bk-title">Register your details</h1>
-            <p className="bk-sub">Please complete all fields</p>
+            <p className="bk-sub">Please fill all fields</p>
             {msg.text ? (
               <div
                 className={`bk-alert ${
@@ -354,45 +348,16 @@ export default function RegistrationForm() {
                   required
                 />
               </label>
-              <label className="bk-label">
-                Emirates ID No
-                <input
-                  className="bk-input"
-                  name="emiratesId"
-                  value={form.emiratesId}
-                  onChange={setField}
-                  required
-                />
-              </label>
+             
             </section>
 
             {/* Driving (RESTORED) */}
             <section className="bk-card driving">
-              <h4 className="bk-card-title">Driving Details</h4>
-              <label className="bk-label">
-                Driver’s License No.
-                <input
-                  className="bk-input"
-                  name="licenseNo"
-                  value={form.licenseNo}
-                  onChange={setField}
-                  required
-                />
-              </label>
-              <label className="bk-label">
-                License Expiry
-                <input
-                  type="date"
-                  className="bk-input"
-                  name="licenseExpiry"
-                  value={form.licenseExpiry}
-                  onChange={setField}
-                  required
-                />
-              </label>
+              <h4 className="bk-card-title">Off road Experience</h4>
+              
 
               <div className="bk-label" style={{ alignItems: "center" }}>
-                Off-Road Level <span className="bk-asterisk">*</span>
+                {/* Off-Road Level <span className="bk-asterisk">*</span> */}
                 <div className="bk-chips" style={{ marginTop: 0 }}>
                   <input
                     id="lvl-beg"

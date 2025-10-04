@@ -125,9 +125,22 @@ html, body {
 } */
 .empty-day {
   background: transparent;
+  
   border: none;
+  
 }
-
+.banner{
+  height: 50px;
+  margin-top: 50px;
+  font-weight: 100;
+  font-size:x-large;
+  font-family: "Kollegan";
+  justify-content: center;
+  padding: 10px;
+  /* background-color: #e39920; */
+  opacity: 1;
+  color: #f5f2ef;
+}
 /* Responsive */
 @media (max-width: 900px) {
   .app-container {
@@ -205,10 +218,21 @@ html, body {
   align-items: center;
   z-index: 50;
 }
+.modal-confirmation {
+  position: fixed;
+  inset: 0;
+  /* background-color: rgb(19, 19, 19); */
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  color: #171716;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
 
 /* Modal box */
 .modal-content {
-  background: #fff;
+  background: #ffffff;
   padding: 2rem;
   border-radius: 16px;
   width: min(400px, 90%);
@@ -247,6 +271,14 @@ html, body {
 }
 .cancel-button {
   background: #ddd;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+.cancel-button-1{
+  background: #f3a425;
   padding: 0.5rem 1.2rem;
   border-radius: 8px;
   border: none;

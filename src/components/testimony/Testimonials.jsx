@@ -39,7 +39,7 @@ function Testimonials() {
   const { img, text, name, role } = testimonials[current];
 
   return (
-    <section className="t-wrapper">
+    <section className="t-wrapper" id="testimonials">
       <h1 className="t-title">TESTIMONIALS</h1>
 
       <div className="t-row">

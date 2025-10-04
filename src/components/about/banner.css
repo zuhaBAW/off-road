@@ -1,0 +1,50 @@
+/* Marquee bar */
+.marquee-bar {
+  width: 100%;
+  overflow: hidden;
+  background: rgba(18,18,18,.9);      /* matches your glass/dark theme */
+  border-top: 2px solid rgba(255,162,1,.55);
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  color: #fff;
+  font-size: clamp(14px, 2vw, 16px);
+  line-height: 1;
+  padding: 10px 0;
+  padding-top: 30px;
+  height: 35px;
+  position: relative;
+  z-index: 250;                        /* above background */
+}
+
+/* Scrolling track */
+.marquee-track {
+  display: flex;
+  gap: 48px;                           /* space between duplicates */
+  white-space: nowrap;
+  will-change: transform;
+  animation: marquee-left 15s linear infinite;
+}
+
+/* Text spans */
+.marquee-text {
+  padding-left: 100vw;  
+  font-size: 30px;           
+  letter-spacing: .02em;
+  color: #f3a95f;
+}
+
+/* Accent for separators or key parts (optional) */
+.marquee-text b,
+.marquee-text .accent {
+  color: #ffa201;                      /* your amber token */
+}
+
+/* Keyframes */
+@keyframes marquee-left {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Prefer reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}

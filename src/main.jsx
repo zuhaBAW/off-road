@@ -8,6 +8,7 @@ import { HashRouter, Routes, Route } from "react-router-dom"; // HashRouter avoi
 import App from "./App";
 import RegistrationForm from "./components/registration/Register";
 import ResetPasswordPage from "./components/auth/ResetPasswordPage";
+import Home from "./components/home/Home";
 
 createRoot(document.getElementById("root")).render(
   <MantineProvider>
@@ -15,6 +16,8 @@ createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/register" element={<RegistrationForm />} />
+  <Route path="/home" element={<App/>}/>
+
         {/* optional catch-all to avoid blanks */}
         <Route path="*" element={<App />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />

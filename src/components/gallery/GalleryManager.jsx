@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ImageCarousel from "./ImageCarousel";
 import "./galleryManager.css";
 
+
 const GalleryManager = ({ albums }) => {
   const [selectedAlbum, setSelectedAlbum] = useState(null);
 
@@ -14,7 +15,7 @@ const GalleryManager = ({ albums }) => {
   };
 
   return (
-    <div className="gallery-manager">
+    <div className="gallery-manager" id="services">
       {!selectedAlbum ? (
         <div className="album-grid">
           {albums.map((album, index) => (
@@ -26,9 +27,7 @@ const GalleryManager = ({ albums }) => {
               <img
                 src={album.images[0]}
                 alt={album.name}
-                onError={(e) => {
-                  e.target.src = "/placeholder.jpg"; // Provide a fallback image
-                }}
+                
               />
               <div className="album-title">{album.name}</div>
             </div>
