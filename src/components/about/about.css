@@ -13,7 +13,10 @@ html, body {
   gap: clamp(30px, 5vw, 60px);
   align-items: center;      
   justify-content: center; 
-  height: 100vh;            
+  
+  height: auto;      /* allow container to expand */
+  min-height: 100svh; /* optional: at least full viewport height */
+        
   padding: clamp(20px, 4vw, 60px);
   box-sizing: border-box;
 }
