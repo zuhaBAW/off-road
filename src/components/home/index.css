@@ -137,24 +137,24 @@ body{ margin: 0; min-width: 320px; color: var(--ink); }
 }
 .login-card{
   width: clamp(300px, 15vw, 380px);
-  background: rgba(40, 40, 40, 0.46);
+  /* background: rgba(40, 40, 40, 0.46); */
   padding: 14px;
   border-radius: 16px;
   text-align: center;
   box-shadow: 0 12px 32px rgba(0,0,0,.28);
-  backdrop-filter: blur(2px);
+  /* backdrop-filter: blur(2px); */
 }
 .logo{ display:flex; justify-content:center; align-items:center; margin-top: 4px; }
 .logo img{ width: 140px; height: 140px; object-fit: contain; border-radius: 8px; }
 .login-sub-card{
   border-radius: 12px;
-  padding-top: 6px;
+  padding-top: 16px;
   min-height: 200px;
-  background-color: rgba(252, 250, 250, 0.18);
-  width: 100%;
+  /* background-color: rgba(252, 250, 250, 0.18); */
+  width: 90%;
   margin: 0 auto;
 }
-.login-card h4{ margin: 10px 0 12px; color: #111; }
+.login-card h4{ margin: 10px 0 12px; color: #000000; }
 .login-card input{
   display: block;
   background-color: rgba(255,255,255,.93);
@@ -223,7 +223,7 @@ body{ margin: 0; min-width: 320px; color: var(--ink); }
 
 /* Mobile: stack hero then card; nav remains glass */
 @media (max-width: 768px){
-  .nav-wrap{
+  /* .nav-wrap{
     grid-template-columns: auto 1fr;
     height: 64px;
     padding-inline: 16px;
@@ -231,15 +231,15 @@ body{ margin: 0; min-width: 320px; color: var(--ink); }
   }
   .brand-logo{ width: 96px; }
 
-  .navbar ul{ gap: 16px; font-size: 14px; white-space: nowrap; }
+  .navbar ul{ gap: 16px; font-size: 14px; white-space: nowrap; } */
 
-  .home-content{ min-height: auto; }
+  .home-content{ min-height: auto; width: 100%; }
   .main{ padding-inline: 16px; }
 
   /* stop absolute positioning → natural flow */
   .hero-copy{ position: static; margin: 80px 0 8px; }
   .hero-title{ font-size: clamp(44px, 14vw, 80px); }
-  .hero-script{ font-size: clamp(36px, 10vw, 64px); left: 0; top: -6px; }
+  .hero-script{ font-size: 30px,; left: 0; top: -6px; }
   .hero-tagline{ width: min(92vw, 520px); }
 
   .login-main{ position: static; margin-top: 12px; }
@@ -419,10 +419,10 @@ a:link {
   .home-content{ min-height: auto !important; }
   .hero-copy{ position: static !important; margin: 76px 0 8px !important; }
   .hero-title{ font-size: clamp(44px, 14vw, 80px) !important; margin-left: 85px !important }
-  .hero-script{ font-size: clamp(36px, 10vw, 64px) !important; left: 0 !important; margin-left: 85px !important }
+  .hero-script{ font-size: clamp(36px, 10vw, 64px) !important; left: 0 !important; margin-left: 100px !important }
   .login-main{ position: static !important; margin-top: 12px !important; }
   .login-card{ width: min(92vw, 380px) !important; }
-  .hero-tagline{margin-left: 60px !important}
+  .hero-tagline{margin-left: 65px !important; width: 55% !important;}
 }
 /* ======== HOME SHIELD against App.css ======== */
 .home-section{
@@ -469,11 +469,11 @@ a:link {
 
 /* 3) Login panel: a touch darker + crisper inner card */
 .login-card{
-  background: rgba(18,18,18,.52) !important;     /* slightly darker */
+  background: rgba(18,18,18,.52) !important;   
   box-shadow: 0 16px 34px rgba(0,0,0,.32) !important;
 }
 .login-sub-card{
-  background: rgba(255,255,255,.12) !important;  /* frostier inner slab */
+  background: rgba(255,255,255,.12) !important;  
   border: 1px solid rgba(255,255,255,.14) !important;
 }
 .login-btn{
@@ -596,7 +596,7 @@ a:link {
 }
 
 /* ========= MOBILE UPGRADE ========= */
-@media (max-width: 900px){
+@media (max-width: 800px){
   /* 1) layout: logo left, burger right, links hidden initially */
   .nav-wrap{
     grid-template-columns: auto auto auto;
@@ -657,32 +657,241 @@ a:link {
 
 /* keep hero/content below the bar band */
 .home-content{ min-height: calc(100svh - 68px); }
-@media (max-width: 900px){
+@media (max-width: 800px){
   .home-content{ min-height: auto; }  /* since menu can slide over */
 }
 /* ================================
    Mobile: align social bar with login card
    ================================ */
+
+/* --- MOBILE FIXES (below 768px) --- */
 @media (max-width: 768px) {
-  .home-social {
-    position: relative;                     /* flow below login */
-    margin: 16px auto 0 auto;               /* center it */
-    width: min(92vw, 380px);                /* same width as login-card */
+
+  /* Glassy nav wrapper fix */
+  .nav-wrap {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
     display: flex;
-    justify-content: space-between;
+    /* margin-top: 10px; */
+    margin-top: -40%;
+    margin-left: -30px;
+    justify-content: space-between; /* logo left, burger right */
     align-items: center;
-    gap: 16px;
+    /* background: rgba(0, 0, 0, 0.35); */
+    /* backdrop-filter: blur(8px); */
+    /* -webkit-backdrop-filter: blur(8px); */
+    /* padding: 0.6rem 1rem; */
+    z-index: 1000;
+    overflow: hidden; /* prevent scroll inside */
+    height: 50px; /* fixed height for consistent look */
   }
 
-  .social-link {
-    flex: 1;                                /* distribute evenly */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-decoration: none;
+  /* Logo inside nav */
+  .brand-logo {
+    margin-top: 10px;
+    margin-left:10px;
+    height: 80px;
+    width: auto;
+    object-fit: contain;
   }
 
-  .social-text {
-    font-size: 14px;
+  /* Hamburger placement */
+  .nav-burger {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    z-index: 1100;
+  }
+
+  .nav-burger .line {
+    width: 26px;
+    height: 2.4px;
+    background: #ffa201; /* your brand amber */
+    border-radius: 2px;
+  }
+
+  /* Prevent main content from hiding behind fixed nav */
+  .home-content {
+    padding-top: 70px;
+  }
+
+  /* Make sure hero and login sections scale well */
+  .hero-title {
+    font-size: clamp(2rem, 6vw, 2.5rem);
+  }
+  .hero-script {
+    font-size: 25px !important;
+  }
+  .hero-tagline span {
+    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+    
+  }
+
+  /* Adjust login card a bit for small screens */
+  .login-main {
+    margin-top: 1rem;
+  }
+  .login-card {
+    width: 90%;
+    max-width: 340px;
+    margin-inline: auto;
   }
 }
+
+/* ===== MOBILE/TABLET: remove the gap above the social bar ===== */
+@media (max-width: 800px){
+  /* Let content dictate height (no forced viewport min-height) */
+  .home-section{
+    min-height: auto !important;
+    height: auto !important;
+  }
+  .home-content{
+    min-height: auto !important;
+    padding-bottom: 0 !important;   /* no artificial bottom space */
+  }
+
+  /* Make the login block part of the normal flow with a small bottom gap */
+  .login-main{
+    position: static !important;
+    margin-top: 12px !important;
+    margin-bottom: 8px !important;  /* tiny spacer before social row */
+  }
+
+  /* Social row: sit right under the card, centered, compact width */
+  .home-social{
+    position: static !important;    /* stop pinning to bottom */
+    left: auto !important;
+    transform: none !important;
+    bottom: auto !important;
+
+    width: min(92vw, 380px) !important;   /* match login card width */
+    margin: 8px auto 12px auto !important;
+    padding: 10px 12px !important;
+
+    display: flex !important;
+    gap: 16px !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    z-index: 1 !important;
+  }
+
+  /* Keep icon/text readable but compact */
+  .social-text{
+    font-size: clamp(14px, 3.6vw, 18px) !important;
+  }
+}
+
+/* Extra small phones: squeeze spacing a bit more */
+@media (max-width: 430px) and (max-height: 740px){
+  .login-main{ margin-bottom: 6px !important; }
+  .home-social{ margin: 6px auto 10px auto !important; padding: 8px 10px !important; }
+}
+/* ===== Mobile dropdown (right-corner, small, transparent) ===== */
+@media (max-width: 900px){
+  /* keep your burger position & look; just ensure it's above the panel */
+  .nav-burger{
+    position: fixed !important;
+    top: 10px !important;
+    right: 12px !important;
+    z-index: 1001 !important;
+  }
+
+  /* tiny floating rectangle under the bar, aligned right */
+  .navbar{
+    position: fixed !important;
+    top: 64px !important;          /* just below your bar */
+    right: 12px !important;
+    left: auto !important;
+    width: min(70vw, 240px) !important;
+
+    background: rgba(18,18,18,.60) !important; 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(0,0,0,.32);
+
+    transform: translateY(-12px);
+    opacity: 0; visibility: hidden;
+    transition: opacity .22s ease, transform .22s ease, visibility 0s .22s;
+    z-index: 1000 !important;
+  }
+
+  /* open state — works with either class you already toggle */
+  .nav-wrap.is-open .navbar,
+  .navbar.open{
+    transform: translateY(0);
+    opacity: 1; visibility: visible;
+    transition: opacity .22s ease, transform .22s ease;
+  }
+
+  .navbar ul{
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 10px 12px !important;
+    margin: 0 !important;
+  }
+  .navbar li::after{ display: none !important; } /* remove desktop underline in list */
+
+  /* optional: tighter link padding for the small card */
+  .navbar a, .navbar li{
+    padding: 10px 10px !important;
+    background: transparent !important;
+  }
+
+  /* burger → X animation (uses your existing markup) */
+  .nav-wrap.is-open .nav-burger .line:nth-child(1){
+    transform: translateY(6px) rotate(45deg);
+  }
+  .nav-wrap.is-open .nav-burger .line:nth-child(2){ opacity: 0; }
+  .nav-wrap.is-open .nav-burger .line:nth-child(3){
+    transform: translateY(-6px) rotate(-45deg);
+  }
+}
+/* === Fix: hamburger clipped at the right edge (mobile only) === */
+@media (max-width: 900px){
+  /* never clip children in the header wrapper */
+  .nav-wrap{ overflow: visible !important; width: 100% !important; }
+
+  /* anchor the burger inside the safe area (iPhone notch, etc.) */
+  .nav-burger{
+    position: fixed !important;
+    margin-top: 15px;
+    top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
+    right: calc(env(safe-area-inset-right, 0px) + 12px) !important;
+    z-index: 1001 !important;
+  }
+
+  /* make sure the dropdown aligns with the burger safely too */
+  .navbar{
+    position: fixed !important;
+    top: calc(env(safe-area-inset-top, 0px) + 64px) !important; /* just below your bar */
+    right: calc(env(safe-area-inset-right, 0px) + 12px) !important;
+    left: auto !important;
+     margin-top: auto;
+     width: 150px !important;
+    transform: translateY(-12px);
+    opacity: 0; visibility: hidden;
+    transition: opacity .22s ease, transform .22s ease, visibility 0s .22s;
+    z-index: 1000 !important;
+  }
+  .navbar.open,
+  .nav-wrap.is-open .navbar{
+    transform: translateY(0); opacity: 1; visibility: visible;
+  }
+}
+
+/* Optional: stop any horizontal jiggle */
+html, body { overflow-x: hidden; }

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useRef } from "react"; // NEW
 import "./index.css";
 import logo from "../../assets/logo.png";
 import ForgotPasswordModal from "../auth/ForgotPassword"; // ⬅️ add this
@@ -12,21 +13,52 @@ export default function Home() {
   const [loginError, setLoginError] = useState(""); // ⬅️ server error state
   const [open, setOpen] = useState(false);
 
+   const wrapRef = useRef(null);
+  const navRef = useRef(null);
+  
+
   // lock page scroll when menu is open (nice polish)
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => (document.body.style.overflow = "");
   }, [open]);
 
+  // NEW: close on outside click, Esc key, or when resizing to desktop
+  useEffect(() => {
+    if (!open) return;
+
+    const onDocClick = (e) => {
+      if (!wrapRef.current) return;
+      // if click is outside the wrapper and nav
+      if (!wrapRef.current.contains(e.target)) setOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const onResize = () => {
+      if (window.innerWidth > 900) setOpen(false);
+    };
+
+    document.addEventListener("click", onDocClick);
+    document.addEventListener("keydown", onKey);
+    window.addEventListener("resize", onResize);
+    return () => {
+      document.removeEventListener("click", onDocClick);
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [open]);
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((p) => ({ ...p, [name]: value }));
   };
 
-   const closeOnNavClick = (e) => {
-     if (e.target.tagName.toLowerCase() === "a") setOpen(false);
-   };
-  
+  const closeOnNavClick = (e) => {
+    if (e.target.tagName.toLowerCase() === "a") setOpen(false);
+  };
+
   const validate = () => {
     const errs = {};
     if (!formData.username.trim()) errs.username = "Username is required";
@@ -59,7 +91,11 @@ export default function Home() {
       let msg = err.message || "Login failed";
 
       // Map common backend messages to user-friendly ones
-      if (msg.includes("Internal Server Error") || msg.includes("password") || msg.includes("email"))
+      if (
+        msg.includes("Internal Server Error") ||
+        msg.includes("password") ||
+        msg.includes("email")
+      )
         msg = "Wrong email/username or password.";
 
       setLoginError(msg);
@@ -94,9 +130,10 @@ export default function Home() {
 
   return (
     <section className="home-section" id="home">
-      <div className="nav-wrap">
+      <div ref={wrapRef} className={`nav-wrap ${open ? "is-open" : ""}`}>
         <img className="brand-logo" src={logo} alt="Offroad Adda" />
         <nav
+          ref={navRef}
           className={`navbar ${open ? "open" : ""}`}
           onClick={closeOnNavClick}
         >
@@ -132,6 +169,7 @@ export default function Home() {
           aria-label="Toggle navigation"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
+          type="button"
         >
           <span className="line" />
           <span className="line" />
