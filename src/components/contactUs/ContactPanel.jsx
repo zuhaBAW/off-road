@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./contact.css";
 // import { submitContact } from "../../api/ContactApi";
 
-const WHATSAPP_NUMBER = "971523717863"; 
+const WHATSAPP_NUMBER = "971556719190"; 
 
 export default function ContactPanel() {
   const initial = { name: "", email: "", mobile: "", service: "", message: "" };
