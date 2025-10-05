@@ -20,14 +20,18 @@ const AboutUsWithCalendar = () => {
   const [events, setEvents] = useState({}); // { "2025-9-29": [eventObj, ...] }
   const [selectedEventDay, setSelectedEventDay] = useState(null); // { date: Date, events: [...] }
   const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [bookingDetails, setBookingDetails]=useState({Email:"",events:"",date:""})
+  const [bookingDetails, setBookingDetails] = useState({
+    Email: "",
+    events: "",
+    date: "",
+  });
   // const []
 
   useEffect(() => {
     (async () => {
       const map = await fetchEvents();
       setEvents(map);
-  
+
       // move calendar to earliest event month if exists
       const keys = Object.keys(map || {});
       if (keys.length) {
@@ -42,7 +46,34 @@ const AboutUsWithCalendar = () => {
       }
     })();
   }, []);
- console.log(events, "events");
+
+  // Add this near the other useEffects
+  useEffect(() => {
+    // If any modal opens (either event modal or confirmation modal), add history entry
+    if (selectedEventDay || confirmationOpen) {
+      window.history.pushState({ modalOpen: true }, "");
+    }
+
+    const handlePopState = () => {
+      // Priority 1: close confirmation modal if open
+      if (confirmationOpen) {
+        setConfirmationOpen(false);
+        return;
+      }
+
+      // Priority 2: close event modal if open
+      if (selectedEventDay) {
+        setSelectedEventDay(null);
+        return;
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [selectedEventDay, confirmationOpen]);
+
+  
+  console.log(events, "events");
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const monthName = currentDate.toLocaleString("default", { month: "long" });
@@ -54,26 +85,26 @@ const AboutUsWithCalendar = () => {
 
   const weekdays = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
+  const openDay = (date) => {
+    const key = `${date.getFullYear()}-${
+      date.getMonth() + 1
+    }-${date.getDate()}`;
 
-const openDay = (date) => {
-  const key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
- 
+    const dayEvents = events[key] || [];
 
-  const dayEvents = events[key] || [];
-
-  if (dayEvents.length > 0) {
-    console.log("✅ Found event(s):", dayEvents);
-    setSelectedEventDay({ date, events: dayEvents });
-  } else {
-    console.log("❌ No events found for this date.");
-  }
-};
+    if (dayEvents.length > 0) {
+      console.log("✅ Found event(s):", dayEvents);
+      setSelectedEventDay({ date, events: dayEvents });
+    } else {
+      console.log("❌ No events found for this date.");
+    }
+  };
 
   // book now
   const handleTopBookClick = () => {
     if (!isLoggedIn()) {
       alert("You need to login first!");
-     document.getElementById("home")?.scrollIntoView({ behavior: "smooth" });
+      document.getElementById("home")?.scrollIntoView({ behavior: "smooth" });
 
       return;
     }
@@ -95,7 +126,6 @@ const openDay = (date) => {
     });
   };
 
-
   //  const handleBookClick = async (callback) => {
   //    if (!isLoggedIn()) {
   //      alert("You need to login first!");
@@ -107,7 +137,7 @@ const openDay = (date) => {
 
   //    const user = getLoggedInUser();
   //    if (!user) return;
-     
+
   //   //  console.log(user, "user details");
   //    callback(user);
   //    console.log(bookingDetails,"details of bookingggggggg")
@@ -119,7 +149,7 @@ const openDay = (date) => {
   //      alert("Booking failed: " + err.message);
   //    }
   //  };
-  
+
   return (
     <div id="about">
       {/* About Us */}
@@ -288,12 +318,11 @@ const openDay = (date) => {
                     <p>You have successfully registered for the event.</p>
                     <button
                       onClick={() => {
-                        setConfirmationOpen(false)
-                             document
-                               .getElementById("home")
-                               ?.scrollIntoView({ behavior: "smooth" });
-                        setSelectedEventDay(null)
-
+                        setConfirmationOpen(false);
+                        document
+                          .getElementById("home")
+                          ?.scrollIntoView({ behavior: "smooth" });
+                        setSelectedEventDay(null);
                       }}
                       className="cancel-button-1"
                     >

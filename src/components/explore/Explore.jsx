@@ -32,10 +32,25 @@ export default function Explore() {
   useEffect(() => {
     if (selectedAlbum) {
       document.body.style.overflow = "hidden";
+       window.history.pushState({ modalOpen: true }, "");
     } else {
       document.body.style.overflow = "auto";
     }
   }, [selectedAlbum]);
+
+  
+
+   // ✅ Listen for browser Back button
+   useEffect(() => {
+     const handlePopState = () => {
+       // If modal was open, close it instead of navigating away
+       if (selectedAlbum) {
+         setSelectedAlbum(null);
+       }
+     };
+     window.addEventListener("popstate", handlePopState);
+     return () => window.removeEventListener("popstate", handlePopState);
+   }, [selectedAlbum]);
 
   const handleAlbumClick = (album) => {
     setSelectedAlbum(album);

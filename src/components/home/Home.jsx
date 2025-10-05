@@ -10,12 +10,23 @@ export default function Home() {
   const [showForgot, setShowForgot] = useState(false); // ⬅️ modal state
   const [loading, setLoading] = useState(false); // ⬅️ loading state
   const [loginError, setLoginError] = useState(""); // ⬅️ server error state
+  const [open, setOpen] = useState(false);
+
+  // lock page scroll when menu is open (nice polish)
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => (document.body.style.overflow = "");
+  }, [open]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((p) => ({ ...p, [name]: value }));
   };
 
+   const closeOnNavClick = (e) => {
+     if (e.target.tagName.toLowerCase() === "a") setOpen(false);
+   };
+  
   const validate = () => {
     const errs = {};
     if (!formData.username.trim()) errs.username = "Username is required";
@@ -85,7 +96,10 @@ export default function Home() {
     <section className="home-section" id="home">
       <div className="nav-wrap">
         <img className="brand-logo" src={logo} alt="Offroad Adda" />
-        <nav className="navbar">
+        <nav
+          className={`navbar ${open ? "open" : ""}`}
+          onClick={closeOnNavClick}
+        >
           <ul>
             <li>
               <a href="#home">Home</a>
@@ -113,6 +127,16 @@ export default function Home() {
             </li>
           </ul>
         </nav>
+        <button
+          className="nav-burger"
+          aria-label="Toggle navigation"
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+        >
+          <span className="line" />
+          <span className="line" />
+          <span className="line" />
+        </button>
       </div>
 
       <div className="home-content">
@@ -166,7 +190,7 @@ export default function Home() {
                   {loginError && <p className="error-text">{loginError}</p>}
 
                   <p className="join-text">
-                    Not a member? <a href="/#/register">Join now</a>
+                    Not a member? <a href="/register">Join now</a>
                   </p>
                 </div>
 
@@ -189,7 +213,6 @@ export default function Home() {
                   >
                     Forgot Password?
                   </button>
-                 
                 </div>
               </form>
             </div>

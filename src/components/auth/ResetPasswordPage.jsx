@@ -1,197 +1,126 @@
-import React, { useMemo, useState } from "react";
+// src/pages/ResetPassword.jsx
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import "./reset-password.css"; // <-- add this line
 
-const API_URL = "http://localhost:1337/api/auth/reset-password";
+const API_BASE = "http://localhost:1337";
 
-export default function ResetPasswordPage() {
-  // read ?code=... from the URL
-  const code = useMemo(
-    () => new URLSearchParams(window.location.search).get("code") || "",
-    []
-  );
+export default function ResetPassword() {
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const code = params.get("code");
+
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState({ type: "", text: "" });
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
     setMsg({ type: "", text: "" });
+  }, [password, confirm]);
 
-    if (!code) {
-      setMsg({
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!code)
+      return setMsg({
         type: "error",
-        text: "Missing reset code. Please use the link from your email.",
+        text: "Reset code missing. Open the email link again.",
       });
-      return;
-    }
-    if (!password || !confirm) {
-      setMsg({
+    if (!password || password.length < 8)
+      return setMsg({
         type: "error",
-        text: "Please enter and confirm your new password.",
+        text: "Password must be at least 8 characters.",
       });
-      return;
-    }
-    if (password !== confirm) {
-      setMsg({ type: "error", text: "Passwords do not match." });
-      return;
-    }
+    if (password !== confirm)
+      return setMsg({ type: "error", text: "Passwords do not match." });
 
     try {
-      setSubmitting(true);
-      const res = await fetch(API_URL, {
+      setLoading(true);
+      const res = await fetch(`${API_BASE}/api/auth/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code, // token from the email URL
-          password, // new password
-          passwordConfirmation: confirm,
-        }),
+        body: JSON.stringify({ password, passwordConfirmation: confirm, code }),
       });
-
-      let body = null,
-        raw = "";
-      try {
-        body = await res.clone().json();
-      } catch {
-        try {
-          raw = await res.text();
-        } catch {
-          console.log('eroor')
-        }
-      }
-
-      if (!res.ok) {
-        const errText =
-          body?.error?.message || body?.message || raw || "Reset failed.";
-        throw new Error(errText);
-      }
+      const data = await res.json();
+      if (!res.ok)
+        throw new Error(data?.error?.message || "Failed to reset password.");
 
       setMsg({
         type: "success",
-        text: "Password reset successful. You can now log in.",
+        text: "Password updated! Redirecting to login...",
       });
-      setPassword("");
-      setConfirm("");
+      setTimeout(() => navigate("/login"), 1200);
     } catch (err) {
-      setMsg({
-        type: "error",
-        text: err?.message || "Unable to reset password.",
-      });
+      setMsg({ type: "error", text: err.message });
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div style={styles.wrap}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Reset Password</h2>
-        <p style={styles.sub}>Set a new password for your account.</p>
+    <section className="rp-wrap">
+      <div className="rp-card">
+        <header className="rp-head">
+          <h1 className="rp-title">Reset your password</h1>
+          <p className="rp-sub">
+            {/* Create a strong new password to secure your account. */}
+          </p>
+        </header>
 
-        {msg.text ? (
-          <div
-            style={{
-              ...styles.alert,
-              ...(msg.type === "error" ? styles.err : styles.ok),
-            }}
-          >
-            {msg.text}
+        {!code && (
+          <div className="rp-alert rp-alert-error">
+            No reset code found in the URL. Open the link from your email again.
           </div>
-        ) : null}
+        )}
 
-        <form onSubmit={onSubmit}>
-          <label style={styles.label}>
-            New Password
-            <input
-              style={styles.input}
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-            />
+        <form className="rp-form" onSubmit={handleSubmit}>
+          <label className="rp-label" htmlFor="newPass">
+            New password
           </label>
+          <input
+            id="newPass"
+            className="rp-input"
+            type="password"
+            placeholder="Enter new password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="new-password"
+          />
 
-          <label style={styles.label}>
-            Confirm Password
-            <input
-              style={styles.input}
-              type="password"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              placeholder="••••••••"
-              required
-            />
+          <label className="rp-label" htmlFor="confirmPass">
+            Confirm password
           </label>
+          <input
+            id="confirmPass"
+            className="rp-input"
+            type="password"
+            placeholder="Re-enter new password"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            autoComplete="new-password"
+          />
 
-          <button style={styles.btn} type="submit" disabled={submitting}>
-            {submitting ? "Resetting…" : "Reset Password"}
+          {msg.text && (
+            <div
+              className={`rp-alert ${
+                msg.type === "error" ? "rp-alert-error" : "rp-alert-ok"
+              }`}
+            >
+              {msg.text}
+            </div>
+          )}
+
+          <button type="submit" className="rp-btn" disabled={loading || !code}>
+            {loading ? "Updating…" : "Set new password"}
           </button>
         </form>
+
+        <footer className="rp-foot">
+          <a href="/login" className="rp-link">
+            Back to login
+          </a>
+        </footer>
       </div>
-    </div>
+    </section>
   );
 }
-
-const styles = {
-  wrap: {
-    minHeight: "100vh",
-    display: "grid",
-    placeItems: "center",
-    background: "#0b0d12",
-    padding: "24px",
-  },
-  card: {
-    width: "min(420px, 92vw)",
-    background: "rgba(25,25,25,.85)",
-    color: "#fff",
-    border: "1px solid rgba(233,165,96,.5)",
-    borderRadius: 14,
-    padding: "16px 16px 18px",
-    boxShadow: "0 16px 40px rgba(0,0,0,.45)",
-  },
-  title: { margin: "4px 0 2px", fontSize: "1.35rem", fontWeight: 800 },
-  sub: { margin: "0 0 10px", color: "#c9cdd4", fontSize: ".95rem" },
-  alert: {
-    margin: "8px 0",
-    padding: "8px 10px",
-    borderRadius: 10,
-    fontWeight: 600,
-    fontSize: ".9rem",
-  },
-  err: {
-    background: "rgba(255,83,83,.16)",
-    border: "1px solid rgba(255,83,83,.45)",
-  },
-  ok: {
-    background: "rgba(55,208,123,.18)",
-    border: "1px solid rgba(55,208,123,.45)",
-  },
-  label: {
-    display: "grid",
-    gridTemplateColumns: "max-content 1fr",
-    gap: 10,
-    alignItems: "center",
-    margin: "8px 0",
-  },
-  input: {
-    background: "rgba(255,255,255,.08)",
-    border: "none",
-    borderRadius: 10,
-    padding: "10px 12px",
-    color: "#fff",
-    width: "100%",
-  },
-  btn: {
-    marginTop: 12,
-    width: "100%",
-    background: "#e9a560",
-    color: "#1a1a1a",
-    border: "none",
-    borderRadius: 10,
-    padding: "10px 14px",
-    fontWeight: 900,
-    letterSpacing: "1px",
-    cursor: "pointer",
-  },
-};
