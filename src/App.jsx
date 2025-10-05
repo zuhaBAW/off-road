@@ -37,7 +37,7 @@ function App() {
         <Explore />
         <Testimonials />
         <ContactPanel />
-
+{/* <ResetPasswordPage/> */}
     
         {/* <Gallery /> */}
       </section>
