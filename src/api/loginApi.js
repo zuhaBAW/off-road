@@ -1,6 +1,5 @@
 const API_URL = "http://localhost:1337/api";
 
-// Login function
 export async function loginUser(payload) {
   const res = await fetch(`${API_URL}/auth/local`, {
     method: "POST",

@@ -1,4 +1,3 @@
-// src/api/ContactApi.js
 const API_URL = "http://localhost:1337/api/contact";
 
 export async function submitContact(formData) {

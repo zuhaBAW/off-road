@@ -153,14 +153,8 @@ export default function Home() {
             <li>
               <a href="#contact">Contact</a>
             </li>
-            <li
-              onClick={() => {
-                localStorage.removeItem("jwt");
-                localStorage.removeItem("user");
-                alert("Logged out!");
-              }}
-            >
-              logout
+            <li>
+              <a href="#home">Login</a>
             </li>
           </ul>
         </nav>

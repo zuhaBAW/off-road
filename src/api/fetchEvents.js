@@ -1,4 +1,4 @@
-// src/api/fetchEvents.js
+
 export async function fetchEvents() {
   try {
     const res = await fetch("http://localhost:1337/api/events?populate=*");
@@ -11,10 +11,9 @@ export async function fetchEvents() {
     const eventsMap = {};
 
     items.forEach((item) => {
-      // Strapi v4 typically nests fields under attributes
+    
       const attrs = item.attributes ?? item;
 
-      // Try common date field names
       const dateStr =
         attrs?.Date ??
         attrs?.date ??
@@ -33,7 +32,6 @@ export async function fetchEvents() {
         return;
       }
 
-      // Key uses local date components to match your calendar keys
       const key = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 
       const eventObj = {

@@ -1,4 +1,3 @@
-// src/components/AboutUsWithCalendar.jsx
 import React, { useState, useEffect } from "react";
 import "./about.css";
 import {
@@ -8,7 +7,7 @@ import {
 } from "@tabler/icons-react";
 import { isLoggedIn, getLoggedInUser } from "../../api/loginApi";
 import { bookEvent } from "../../api/auth";
-import { fetchEvents } from "../../api/fetchEvents"; // adjust path if needed
+import { fetchEvents } from "../../api/fetchEvents"; 
 import Banner from "./Banner";
 
 const AboutUsWithCalendar = () => {
@@ -17,22 +16,20 @@ const AboutUsWithCalendar = () => {
   const [currentDate, setCurrentDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1)
   );
-  const [events, setEvents] = useState({}); // { "2025-9-29": [eventObj, ...] }
-  const [selectedEventDay, setSelectedEventDay] = useState(null); // { date: Date, events: [...] }
+  const [events, setEvents] = useState({}); 
+  const [selectedEventDay, setSelectedEventDay] = useState(null); 
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [bookingDetails, setBookingDetails] = useState({
     Email: "",
     events: "",
     date: "",
   });
-  // const []
 
   useEffect(() => {
     (async () => {
       const map = await fetchEvents();
       setEvents(map);
 
-      // move calendar to earliest event month if exists
       const keys = Object.keys(map || {});
       if (keys.length) {
         keys.sort((a, b) => {
@@ -47,21 +44,17 @@ const AboutUsWithCalendar = () => {
     })();
   }, []);
 
-  // Add this near the other useEffects
   useEffect(() => {
-    // If any modal opens (either event modal or confirmation modal), add history entry
     if (selectedEventDay || confirmationOpen) {
       window.history.pushState({ modalOpen: true }, "");
     }
 
     const handlePopState = () => {
-      // Priority 1: close confirmation modal if open
       if (confirmationOpen) {
         setConfirmationOpen(false);
         return;
       }
 
-      // Priority 2: close event modal if open
       if (selectedEventDay) {
         setSelectedEventDay(null);
         return;
@@ -109,7 +102,6 @@ const AboutUsWithCalendar = () => {
       return;
     }
 
-    // Find the first date that has events
     const eventKeys = Object.keys(events).sort(
       (a, b) => new Date(a) - new Date(b)
     );
@@ -126,30 +118,7 @@ const AboutUsWithCalendar = () => {
     });
   };
 
-  //  const handleBookClick = async (callback) => {
-  //    if (!isLoggedIn()) {
-  //      alert("You need to login first!");
-  //      setSelectedEventDay(null)
-  //     document.getElementById("home")?.scrollIntoView({ behavior: "smooth" });
-  //      return;
-
-  //    }
-
-  //    const user = getLoggedInUser();
-  //    if (!user) return;
-
-  //   //  console.log(user, "user details");
-  //    callback(user);
-  //    console.log(bookingDetails,"details of bookingggggggg")
-  //    try {
-  //      await bookEvent(bookingDetails); // call the API
-  //      console.log(user,"user details ")
-  //      setConfirmationOpen(true); // show confirmation modal
-  //    } catch (err) {
-  //      alert("Booking failed: " + err.message);
-  //    }
-  //  };
-
+ 
   return (
     <div id="about">
       {/* About Us */}
@@ -169,7 +138,6 @@ const AboutUsWithCalendar = () => {
           </button>
         </div>
 
-        {/* Calendar */}
         <div className="calendar-container">
           <div className="calendar-header">
             <IconCircleChevronLeftFilled onClick={prevMonth} />
@@ -226,7 +194,6 @@ const AboutUsWithCalendar = () => {
           </div>
         </div>
 
-        {/* Modal */}
         {selectedEventDay && (
           <div className="modal-overlay">
             <div className="modal-content">

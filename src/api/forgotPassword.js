@@ -1,5 +1,3 @@
-// POST to your forgot-password endpoint.
-// Replace FORGOT_URL with your real URL if different.
 const FORGOT_URL = "http://localhost:1337/api/auth/forgot-password";
 
 export async function forgotPassword(email) {
@@ -9,7 +7,6 @@ export async function forgotPassword(email) {
     body: JSON.stringify({ email }),
   });
 
-  // Try JSON first; fall back to text for helpful errors
   let body = null,
     raw = "";
   try {

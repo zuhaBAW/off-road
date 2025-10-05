@@ -14,7 +14,7 @@ export async function fetchAlbums() {
           const imageUrl = photo.url;
           return imageUrl ? `${baseUrl}${imageUrl}` : null;
         })
-        .filter(Boolean); // remove nulls
+        .filter(Boolean); 
 
       return {
         name: albumName,
