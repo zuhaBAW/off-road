@@ -1,9 +1,9 @@
-// src/pages/ResetPassword.jsx
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import "./reset-password.css"; // <-- add this line
+import "./reset-password.css";
 
-const API_BASE = "http://localhost:1337";
+const API_BASE = "https://positive-health-719181f708.strapiapp.com/";
 
 export default function ResetPassword() {
   const [params] = useSearchParams();

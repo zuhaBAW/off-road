@@ -30,33 +30,5 @@ const GallerySection = () => {
 export default GallerySection;
 
 
-// export default function Gallery() {
-//     const [gallery, setGallery] = useState([]);
-//     const [extractedImages, setExtractedImages] = useState([])
 
-//     useEffect(() => {
-//         fetch(`http://localhost:1337/api/galleries?populate=*`)
-//             .then((res) => res.json())
-//             .then((data) => {
-//                 console.log("Gallery API response:", data);
-//                 setGallery(data.data || []);
-//             })
-//             .catch((err) => console.error("Error fetching gallery:", err));
-//     }, []);
-
-//   useEffect(() => {
-//     const images = gallery.map((item) =>
-//       item.photo?.map((photo) => `http://localhost:1337${photo.url}`)
-//     );
-//       setExtractedImages(images)
-//       console.log(gallery)
-//     console.log(images);
-//   }, [gallery]);
-
-//   return (
-//     <div>
-//       <ImageCarousel images={extractedImages[0]} />
-//     </div>
-//   );
-// }
 

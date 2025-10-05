@@ -2,43 +2,6 @@ import React, { useRef, useState } from "react";
 import "./register.css";
 import { createRegistration } from "../../api/registerApi";
 import { useNavigate } from "react-router-dom";
-/**
- * Matches your CURL payload exactly (field names + casing).
- * POST target: http://localhost:1337/api/auth/local/register
- *
- * curl -X POST http://localhost:1337/api/auth/local/register \
- *   -H "Content-Type: application/json" \
- *   -d '{
- *     "username": "testuser",
- *     "email": "testuser@example.com",
- *     "password": "TestPass123!",
- *     "DOB": "1990-01-01",
- *     "EmiratesID": "123456789012345",
- *     "Nationality": "UAE",
- *     "MobileNo": "+971500000000",
- *     "LicenseExpiry": "2030-12-31",
- *     "City": "Dubai",
- *     "DriverLicenseNo": "DL123456",
- *     "OffRoadLevel": "Intermediate",
- *     "VehicalMakeModel": "Toyota Land Cruiser",
- *     "Year": 2022,
- *     "Color": "Black",
- *     "Mods": "Lift kit, snorkel",
- *     "PlateNo": "D12345",
- *     "EmergencyContactName": "John Doe",
- *     "EmergencyContactNo": "+971511111111",
- *     "Relationship": "Friend",
- *     "RecoveryGear": true,
- *     "FireExt": true,
- *     "FirstAidKit": true,
- *     "Flag": true,
- *     "Radio": false,
- *     "RecoveryRope": true,
- *     "AirCompressor": true,
- *     "SpareTire": true,
- *     "Medical": "No known conditions"
- *   }'
- */
 
 export default function RegistrationForm() {
   const currentYear = new Date().getFullYear();
@@ -150,7 +113,7 @@ export default function RegistrationForm() {
     try {
       setSubmitting(true);
       await createRegistration(payload);
-      
+
       setMsg({ type: "success", text: "Registration submitted successfully!" });
 
       // Keep auth identity; clear the rest (also clear password).
@@ -181,8 +144,13 @@ export default function RegistrationForm() {
         spareTire: "",
         medical: "",
       }));
-           navigate("/home");
+      setTimeout(() => {
+        navigate("/home");
+      }, 2000); 
 
+
+
+     
     } catch (err) {
       console.log(err,"errror")
       const text = "Registration failed. This email or username might already be in use.";

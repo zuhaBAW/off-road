@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:1337/api/contact";
+const API_URL = "https://positive-health-719181f708.strapiapp.com/contact";
 
 export async function submitContact(formData) {
   try {

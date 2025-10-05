@@ -1,9 +1,11 @@
 export async function fetchAlbums() {
   try {
-    const res = await fetch("http://localhost:1337/api/galleries?populate=*");
+    const res = await fetch(
+      "https://positive-health-719181f708.strapiapp.com/api/galleries?populate=*"
+    );
     const json = await res.json();
 
-    const baseUrl = "http://localhost:1337";
+    // const baseUrl = "https://positive-health-719181f708.strapiapp.com/";
 
     const albums = json.data.map((item) => {
       const albumName = item.name || "Untitled";
@@ -12,7 +14,7 @@ export async function fetchAlbums() {
       const images = photos
         .map((photo) => {
           const imageUrl = photo.url;
-          return imageUrl ? `${baseUrl}${imageUrl}` : null;
+          return imageUrl ? `${imageUrl}` : null;
         })
         .filter(Boolean); 
 

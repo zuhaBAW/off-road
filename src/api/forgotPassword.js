@@ -1,4 +1,5 @@
-const FORGOT_URL = "http://localhost:1337/api/auth/forgot-password";
+const FORGOT_URL =
+  "https://positive-health-719181f708.strapiapp.com/api/auth/forgot-password";
 
 export async function forgotPassword(email) {
   const res = await fetch(FORGOT_URL, {

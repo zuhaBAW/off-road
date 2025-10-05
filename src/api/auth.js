@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:1337/api";
+const API_URL = "https://positive-health-719181f708.strapiapp.com/api";
 
 export async function bookEvent(user) {
   console.log(user.EventDetails, "from api !!!!!!");
