@@ -41,7 +41,7 @@
   font-weight: bold;
 }
 
-.back-button {
+/* .back-button {
   position: absolute;
   top: 20px;
   left: 20px;
@@ -52,4 +52,27 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
+} */
+/* Back button: fixed to viewport and above everything */
+.back-button{
+  position: fixed !important;
+  top: 14px !important;
+  left: 14px !important;
+  z-index: 2147483647 !important;  /* max */
+  pointer-events: auto !important;
+}
+
+/* When gallery is open, let the back button win both visually AND for clicks */
+body.gallery-open .nav-wrap,
+body.gallery-open .nav-burger {
+  pointer-events: none !important;  /* nav can't steal the click */
+  z-index: 0 !important;            /* sits behind the overlay/back button */
+}
+
+/* If any gallery wrapper created a containing block, neutralize it */
+.carousel-container,
+.carousel-wrapper {
+  transform: none !important;
+  filter: none !important;
+  perspective: none !important;
 }

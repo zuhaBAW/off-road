@@ -10,7 +10,7 @@ import "./imageCarousel.css";
  *   - string (auto-detect by file extension)
  *   - { type: 'image'|'video', src: string, poster?: string, controls?: boolean, loop?: boolean, muted?: boolean, autoPlay?: boolean }
  */
-const ImageCarousel = ({ media, images, onBack }) => {
+const ImageCarousel = ({ media, images }) => {
   // Back-compat: if media not provided, treat `images` as media strings
   const items = (media && media.length ? media : images) || [];
 
@@ -65,11 +65,7 @@ const ImageCarousel = ({ media, images, onBack }) => {
 
   return (
     <div className="carousel-container">
-      {onBack && (
-        <button className="back-button" onClick={onBack}>
-          ← Back
-        </button>
-      )}
+    
 
       {normalized.length > 1 && (
         <button className="nav-button left" onClick={goToPrevious}>

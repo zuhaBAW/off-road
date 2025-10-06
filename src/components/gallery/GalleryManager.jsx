@@ -74,9 +74,9 @@ const GalleryManager = ({ albums }) => {
         </div>
       ) : (
         <div className="carousel-view">
-          <button className="back-button" onClick={handleBack}>
+          {/* <button className="back-button" onClick={handleBack}>
             ← Back
-          </button>
+          </button> */}
 
           {/* Prefer 'media' if present; fallback to 'images' (strings) */}
           
