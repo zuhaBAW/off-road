@@ -5,7 +5,7 @@
 
 /* Theme */
 :root{
-  --cp-accent: #e9971c;   /* orange */
+  --cp-accent: #f68b00;   /* orange */
   --cp-fg: #fff;          /* text color */
   --cp-border-x: 2px;     /* side border thickness */
   --cp-pad-x: 24px;       /* horizontal padding for form/footer */
@@ -16,7 +16,7 @@
   line-height: 0.9;
   text-align: center;
   font-family: "SGlitch", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: #e9971c;
+  color: #f68b00;
   font-weight: 200;
   letter-spacing: 0.02em;
   margin: 0 0 28px;

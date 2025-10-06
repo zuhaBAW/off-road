@@ -1,18 +1,17 @@
 .marquee-bar {
   width: 100%;
   overflow: hidden;
-  background: rgba(18,18,18,.9);      
-  border-top: 2px solid rgba(255,162,1,.55);
+  background: rgba(18,18,18,.9);
+  border-top: 2px solid #f68b00;
   border-bottom: 1px solid rgba(255,255,255,.1);
   color: #fff;
   font-size: clamp(14px, 2vw, 16px);
   line-height: 1;
   padding: 10px 0;
-  padding-top: 30px;
-  height: 35px;
   position: relative;
-  z-index: 250;                       
+  z-index: 5; /* lower to avoid overlapping social buttons */
 }
+
 
 
 .marquee-track {

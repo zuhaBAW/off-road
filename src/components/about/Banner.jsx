@@ -57,16 +57,16 @@ export default function Banner({ data }) {
     const wk = parts.find((p) => p.type === "weekday")?.value || "";
     const mo = parts.find((p) => p.type === "month")?.value || "";
     const da = parts.find((p) => p.type === "day")?.value || "";
-    const hr = parts.find((p) => p.type === "hour")?.value || "";
-    const mi = parts.find((p) => p.type === "minute")?.value || "";
+    // const hr = parts.find((p) => p.type === "hour")?.value || "";
+    // const mi = parts.find((p) => p.type === "minute")?.value || "";
 
     const dateStr = `${wk}, ${mo} ${da}`;
-    const timeStr = `${hr}:${mi}`;
+    // const timeStr = `${hr}:${mi}`;
     const loc = ev.location ? `(${ev.location})` : "";
     const title = ev.title ? `— ${ev.title}` : "";
 
     // Tweak the phrasing however you like:
-    return `${dateStr} ${loc} — ${timeStr} ${title}`;
+    return `${dateStr} ${loc} ${title}`;
   });
 
   // Build final sentence

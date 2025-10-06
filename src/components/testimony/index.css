@@ -11,7 +11,7 @@
   line-height: 0.9;
   text-align: center;
   font-family: "SGlitch", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: #e9971c;
+  color: #f68b00;
   font-weight: 200;
   letter-spacing: 0.02em;
   margin: 0 0 28px;
@@ -30,7 +30,7 @@
 
 /* Photo frame (fixed size with border) */
 .t-photoFrame {
-  border: 2px solid #e9971c;
+  border: 2px solid #f68b00;
   padding: clamp(8px, 1.2vw, 12px);
    margin-left: 35px; 
   background: transparent;
@@ -147,4 +147,96 @@
 
 .t-btnNext {
   right: -60px;
+}
+/* === MOBILE FIX: make testimonial carousel arrows visible === */
+@media (max-width: 768px) {
+  .t-btnPrev {
+    left: 6px !important;      /* move inside from edge */
+  }
+  .t-btnNext {
+    right: 6px !important;     /* move inside from edge */
+  }
+
+  /* optional: shrink slightly for better balance */
+  .t-btn {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 1.4rem !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+  }
+}
+/* === FIX: Center testimonial image across all screens === */
+.t-photoFrame {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- keep mobile arrows visible and centered relative to image --- */
+@media (max-width: 768px) {
+  .t-row {
+    overflow: visible !important; /* prevent buttons clipping */
+    justify-items: center !important;
+  }
+
+  .t-btnPrev {
+    left: 6px !important;
+  }
+  .t-btnNext {
+    right: 6px !important;
+  }
+
+  .t-btn {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 1.4rem !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+  }
+}
+/* === MOBILE ONLY: make carousel arrows visible and outside the frame === */
+@media (max-width: 768px) {
+  /* Prevent clipping */
+  .t-row {
+    position: relative;
+    overflow: visible !important;
+  }
+
+  /* Keep frame centered and let arrows sit outside */
+  .t-photoFrame {
+    position: relative;
+    margin: 0 auto;
+    overflow: visible !important;
+  }
+
+  /* Adjust the button positioning */
+  .t-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Place them just outside the photo frame */
+  .t-btnPrev {
+    left: -28px; /* move outside frame */
+  }
+
+  .t-btnNext {
+    right: -28px; /* move outside frame */
+  }
+
+  /* Keep frame centered visually */
+  .t-photoFrame {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

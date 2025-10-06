@@ -177,9 +177,9 @@ body{ margin: 0; min-width: 320px; color: var(--ink); }
 .social-action{
   padding: 8px;
   aspect-ratio: 1 / 1;
-  color: #f59e0b;
+  color: #f68b00;
   background: rgba(0,0,0,.45);
-  border: 1px solid #f59e0b;
+  border: 1px solid #f68b00;
   box-shadow: inset 0 0 0 2px rgba(245,158,11,.18);
   border-radius: 999px;
   transition: transform .15s ease, opacity .15s ease;
@@ -290,7 +290,7 @@ a:link {
   transition: background .2s ease !important;
 }
 .navbar li:hover::after{ background: rgba(255,162,1,.8) !important; }
-.navbar .active{ color:#ffa201 !important; }
+.navbar .active{ color:#f68b00 !important; }
 
 /* 2) Hero: keep within one view band */
 .home-content{ min-height: calc(100dvh - 72px) !important; } /* bar height accounted */
@@ -344,7 +344,7 @@ a:link {
   height:2px !important; background:transparent !important; transition:background .2s ease !important;
 }
 .navbar li:hover::after{ background:rgba(255,162,1,.8) !important; }
-.navbar li a.active{ color:#ffa201 !important; }
+.navbar li a.active{ color:#f68b00!important; }
 
 /* Keep content band exactly one viewport below the bar */
 .home-content{ min-height: calc(100svh - 72px) !important; }
@@ -364,7 +364,7 @@ a:link {
   font-weight: 200 !important;
   font-size: clamp(60px, 9.8vw, 150px) !important;
   line-height:.92 !important; letter-spacing:.04em !important;
-  color:#ffa201 !important;
+  color:#f68b00 !important;
   text-shadow: 0 3px 18px rgba(0,0,0,.6) !important;
 }
 .hero-script{
@@ -448,7 +448,7 @@ a:link {
   bottom: -6px !important;                     /* underline closer to text */
   height: 2px !important;
 }
-.navbar .active{ color: #f9aa32 !important; }
+.navbar .active{ color: #f68b00 !important; }
 
 /* 2) Hero tagline pill: darker glass like the mock */
 .hero-tagline{
@@ -469,7 +469,7 @@ a:link {
   border: 1px solid rgba(255,255,255,.14) !important;
 }
 .login-btn{
-  background: #d18311 !important;                /* rich amber */
+  background: #f68b00 !important;                /* rich amber */
   box-shadow: 0 8px 20px rgba(0,0,0,.28) !important;
 }
 
@@ -572,7 +572,7 @@ a:link {
 
 /* burger always present but hidden on desktop */
 .nav-burger{
-  display: none;
+  /* display: none; */
   width: 42px; height: 42px;
   border: 0; border-radius: 10px;
   background: rgba(0,0,0,.32);
@@ -708,7 +708,7 @@ a:link {
   .nav-burger .line {
     width: 26px;
     height: 2.4px;
-    background: #ffa201; /* your brand amber */
+    background: #f68b00; /* your brand amber */
     border-radius: 2px;
   }
 
@@ -887,3 +887,246 @@ a:link {
 
 /* Optional: stop any horizontal jiggle */
 html, body { overflow-x: hidden; }
+/* ==== MOBILE OVERFLOW FIX — paste LAST ==== */
+
+/* 0) Never cap the hero to one screen on small devices */
+@media (max-width: 900px){
+  .home-section{
+    max-height: none !important;   /* kill the clamp that causes clipping */
+    min-height: auto !important;
+    height: auto !important;
+    padding-bottom: 16px !important;
+  }
+  .home-content{
+    min-height: auto !important;
+    height: auto !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+/* 1) Give space under the fixed glass nav so content can’t hide behind it */
+@media (max-width: 900px){
+  .home-section,
+  .home-content{
+    padding-top: 72px !important;   /* match your fixed header height */
+  }
+}
+
+/* 2) On mobile, stop absolute layout: let elements stack naturally */
+@media (max-width: 900px){
+  .hero-copy{
+    position: static !important;
+    margin: 64px 0 8px !important;
+  }
+  .login-main{
+    position: static !important;    /* critical: no absolute on phones */
+    margin: 12px auto 8px auto !important;
+  }
+  .login-card{
+    width: min(92vw, 380px) !important;
+  }
+}
+
+/* 3) Social row should NOT be pinned; keep it just below the login card */
+@media (max-width: 900px){
+  .home-social{
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+
+    width: min(92vw, 380px) !important;
+    margin: 8px auto 0 auto !important;
+    padding: 10px 12px !important;
+    display: flex !important;
+    gap: 16px !important;
+    justify-content: space-between !important;
+    z-index: 1 !important;   /* below dialogs, above bg */
+  }
+}
+
+/* 4) Extra safety: stop any horizontal nudge that can cause hidden overflow */
+html, body { overflow-x: hidden !important; }
+
+/* 5) Desktop remains as you had it, but ensure ABOUT never slides under HOME */
+#about { position: relative; z-index: 0; }
+/* === MOBILE NAV: keep burger glued to the bar === */
+@media (max-width: 900px){
+  /* The bar itself */
+  .nav-wrap{
+    position: fixed !important;
+    top: 0 !important;
+    left: 0; right: 0;
+    height: 64px !important;
+    margin: 0 !important;          /* kill any negative margins */
+    z-index: 220 !important;
+    /* optional safe-area padding on iOS */
+    padding-top: max(0px, env(safe-area-inset-top)) !important;
+  }
+
+  /* Burger lives inside the bar, not the viewport */
+  .nav-burger{
+    position: absolute !important;
+    top: 50% !important;
+    right: 12px !important;
+    transform: translateY(-50%) !important;
+    z-index: 1 !important;
+  }
+
+  /* Logo consistent inside the bar */
+  .brand-logo{
+    height: 48px !important;       /* or your preferred */
+    width: auto !important;
+    margin: 0 0 0 10px !important;
+  }
+
+  /* Give the page room under the fixed bar */
+  .home-section,
+  .home-content{
+    padding-top: 72px !important;  /* = bar height + a bit */
+  }
+}
+/* === MOBILE NAV + HERO GAP FIX — paste LAST === */
+@media (max-width: 900px){
+  /* 1) Make the bar fixed and give it right padding for the burger */
+  .nav-wrap{
+    position: fixed !important;
+    top: 0 !important; left: 0; right: 0;
+    height: 64px !important;
+    margin: 0 !important;
+    /* keep children visible and leave room for the burger */
+    overflow: visible !important;
+    padding-left: max(12px, env(safe-area-inset-left)) !important;
+    padding-right: 60px !important; /* <— space for burger */
+    /* if a negative margin slipped in anywhere, kill it */
+  }
+
+  /* 2) Burger stays INSIDE the bar, never at the viewport edge */
+  .nav-burger{
+    position: absolute !important;
+    top: 50% !important;
+    right: max(12px, env(safe-area-inset-right)) !important;
+    transform: translateY(-50%) !important;
+    width: 42px !important; height: 42px !important;
+    display: grid !important; place-items: center !important;
+    z-index: 1 !important;
+  }
+  .nav-burger .line{ width: 24px; height: 2px; }
+
+  /* 3) Logo sits cleanly inside the bar */
+  .brand-logo{
+    height: 48px !important; width: auto !important;
+    margin: 0 0 0 10px !important;
+  }
+
+  /* 4) Remove the extra gap before the hero title */
+  .home-section{
+    /* exactly header height so the hero starts right under the bar */
+    padding-top: 64px !important;
+    /* allow section to grow naturally (prevents image “zoom” feeling) */
+    min-height: auto !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+  .home-content{ padding-top: 0 !important; }
+  .hero-copy{ margin-top: 8px !important; }  /* tiny breathing room */
+}
+
+/* If you don’t want the amber hairline below the bar on mobile: */
+@media (max-width: 900px){
+  .nav-wrap{ border-top: 0 !important; } /* optional */
+}
+
+/* Safety: no horizontal clipping that can cut the burger */
+html, body{ overflow-x: hidden !important; }
+/* === 1) Don't use visibility:hidden on the navbar (mobile) === */
+@media (max-width: 900px){
+  .navbar{
+    /* keep the slide/fade effect but stay "visible" so children can show */
+    visibility: visible !important;    /* <-- key change */
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(-12px) !important;
+  }
+  .nav-wrap.is-open .navbar,
+  .navbar.open{
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateY(0) !important;
+  }
+}
+
+/* === 2) Make the burger independent & always on top (mobile) === */
+@media (max-width: 900px){
+  .nav-burger,
+  .navbar .nav-burger,
+  .nav-wrap .nav-burger{
+    position: fixed !important;  /* detach from any hidden ancestor */
+    /* top: calc(env(safe-area-inset-top, 0px) + 10px) !important; */
+    right: calc(env(safe-area-inset-right, 0px) + 12px) !important;
+    transform: none !important;
+
+    display: grid !important; place-items: center !important;
+    width: 42px !important; height: 42px !important;
+
+    opacity: 1 !important;
+    pointer-events: auto !important;
+
+    /* absurdly high to beat anything else */
+    z-index: 2147483647 !important;
+  }
+  .nav-burger .line{
+    display: block !important;
+    width: 24px !important; height: 2.4px !important;
+    background: #f68b00 !important; border-radius: 2px !important;
+  }
+}
+/* === Burger alignment + hide on desktop === */
+
+/* Hide burger on desktop / tablets */
+@media (min-width: 901px){
+  .nav-burger{
+    display: none !important;
+  }
+}
+
+/* Center burger vertically inside navbar on mobile */
+@media (max-width: 900px){
+  .nav-wrap{
+    border-top:2px solid #f68b00 !important;
+    position: fixed !important;
+    top: 0; left: 0; right: 0;
+    height: 64px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0 16px !important;
+    z-index: 1000 !important;
+  }
+
+  .nav-burger{
+    position: absolute !important;
+    top: 0% !important;
+    right: 19px !important;
+    transform: translateY(-50%) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 5px !important;
+    width: 40px !important;
+    height: 40px !important;
+    cursor: pointer !important;
+    margin-bottom: 90px;
+    z-index: 1100 !important;
+  }
+
+  .nav-burger .line{
+    width: 24px !important;
+    height: 2.4px !important;
+    background: #f68b00!important;
+    border-radius: 2px !important;
+  }
+}
+

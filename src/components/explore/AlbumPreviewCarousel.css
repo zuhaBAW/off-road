@@ -9,7 +9,7 @@
 .album-preview-card {
   scroll-snap-align: center;
   flex-shrink: 0;
-  border: 2px solid #f9aa32;
+  border: 2px solid #f68b00;
   background: rgba(0, 0, 0, 0.18);
   padding: clamp(6px, 0.8vw, 10px);
   width: 100%;
