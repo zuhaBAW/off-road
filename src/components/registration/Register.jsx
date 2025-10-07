@@ -165,6 +165,9 @@ export default function RegistrationForm() {
       <div className="bk-container">
         <div className="bk-frame">
           <header className="bk-header">
+            <button className="close-btn" onClick={() => navigate("/home")}>
+              close
+            </button>
             <h1 className="bk-title">Register your details</h1>
             <p className="bk-sub">Please fill all fields</p>
             {msg.text ? (
@@ -316,13 +319,11 @@ export default function RegistrationForm() {
                   required
                 />
               </label>
-             
             </section>
 
             {/* Driving (RESTORED) */}
             <section className="bk-card driving">
               <h4 className="bk-card-title">Off road Experience</h4>
-              
 
               <div className="bk-label" style={{ alignItems: "center" }}>
                 {/* Off-Road Level <span className="bk-asterisk">*</span> */}

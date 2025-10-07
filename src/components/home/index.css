@@ -218,7 +218,7 @@ body{ margin: 0; min-width: 320px; color: var(--ink); }
   .hero-copy{ position: static; margin: 80px 0 8px; }
   .hero-title{ font-size: clamp(44px, 14vw, 80px); }
   .hero-script{ font-size: 30px,; left: 0; top: -6px; }
-  .hero-tagline{ width: min(92vw, 520px); }
+  .hero-tagline{ width: min(92vw, 520px); padding: 30px 30px;}
 
   .login-main{ position: static; margin-top: 12px; }
   .login-card{ width: min(92vw, 380px); }
@@ -726,6 +726,7 @@ a:link {
   }
   .hero-tagline span {
     font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+    padding-left: 15px !important ;
     
   }
 
@@ -1016,7 +1017,7 @@ html, body { overflow-x: hidden !important; }
 
   /* 3) Logo sits cleanly inside the bar */
   .brand-logo{
-    height: 48px !important; width: auto !important;
+    height: 70px !important; width: auto !important;
     margin: 0 0 0 10px !important;
   }
 
@@ -1078,7 +1079,7 @@ html, body{ overflow-x: hidden !important; }
   }
   .nav-burger .line{
     display: block !important;
-    width: 24px !important; height: 2.4px !important;
+    width: 20px !important; height: 2.4px !important;
     background: #f68b00 !important; border-radius: 2px !important;
   }
 }
@@ -1123,10 +1124,10 @@ html, body{ overflow-x: hidden !important; }
   }
 
   .nav-burger .line{
-    width: 24px !important;
-    height: 2.4px !important;
+    width: 30px !important;
+    height: 2.8px !important;
     background: #f68b00!important;
-    border-radius: 2px !important;
+    border-radius: 5px !important;
   }
 }
 

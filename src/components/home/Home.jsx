@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react"; // NEW
 import "./index.css";
 import logo from "../../assets/logo.png";
@@ -13,9 +12,8 @@ export default function Home() {
   const [loginError, setLoginError] = useState(""); // ⬅️ server error state
   const [open, setOpen] = useState(false);
 
-   const wrapRef = useRef(null);
+  const wrapRef = useRef(null);
   const navRef = useRef(null);
-  
 
   // lock page scroll when menu is open (nice polish)
   useEffect(() => {
@@ -48,7 +46,6 @@ export default function Home() {
       window.removeEventListener("resize", onResize);
     };
   }, [open]);
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,6 +82,8 @@ export default function Home() {
 
       alert(`Login successful! Welcome ${result.user.username}`);
       setFormData({ username: "", password: "" });
+      document.getElementById("home")?.scrollIntoView({ behavior: "smooth" });
+
       // Optionally redirect or update state here
     } catch (err) {
       console.error("Login failed:", err);
