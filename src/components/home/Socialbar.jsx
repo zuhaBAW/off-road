@@ -1,51 +1,53 @@
 import React from "react";
 import { ActionIcon } from "@mantine/core";
-import {
-  IconBrandInstagram,
-  IconBrandFacebook,
-  IconBrandWhatsapp,
-} from "@tabler/icons-react";
+import instagram from "../../assets/icons/instagram.svg";
+import facebook from "../../assets/icons/facebook.svg";
+import whatsapp from "../../assets/icons/whatsapp.svg"
 
-const items = [
-  {
-    href: "https://www.instagram.com/offroadadda/?utm_source=qr&igsh=bDEza3Bmc2gyNjhl#",
-    label: "Instagram",
-    Icon: IconBrandInstagram,
-  },
-  {
-    href: "http://www.facebook.com/share/1WTny8ACun/",
-    label: "Facebook",
-    Icon: IconBrandFacebook,
-  },
-  // {
-  //   href: "#https://chat.whatsapp.com/ITulSmcpxnGFFGKNAbsOvN",
-  //   label: "WhatsApp",
-  //   Icon: IconBrandWhatsapp,
-  // },
-];
 
-export default function SocialBar() {
+export default function SocialBar(isLoggedIn) {
+  const isLoggedInCheck = Boolean(localStorage.getItem("user"));
+  console.log(isLoggedIn);
+  // window.location.reload();
+  const items = [
+    {
+      href: "https://www.instagram.com/offroadadda/?utm_source=qr&igsh=bDEza3Bmc2gyNjhl#",
+      label: "Instagram",
+      src: instagram,
+    },
+    {
+      href: "http://www.facebook.com/share/1WTny8ACun/",
+      label: "Facebook",
+      src: facebook,
+    },
+  ];
+  if (isLoggedInCheck) {
+    items.push({
+      href: "https://chat.whatsapp.com/ITulSmcpxnGFFGKNAbsOvN", // replace with your actual group link",
+      label: "WhatsApp",
+      src: whatsapp,
+    });
+  }
   return (
     <div className="home-social" role="contentinfo" aria-label="Social links">
-      {items.map(( i) => (
+      {items.map((i) => (
         <a
-          key={i}
+          key={i.label}
           className="social-link"
           href={i.href}
           target="_blank"
           rel="noreferrer"
         >
           <ActionIcon
-            variant="outline"
-            color="orange"
-            radius={'300px'}
-            size={10} // circle size (all equal)
-            className="social-action" // ring + bg tuning
+            variant="transparent" // no bg or border
+            radius="xl"
+            size="xl" // clean circular icon area
+            className="social-action"
             aria-label={i.label}
           >
-            <i.Icon size={20} stroke={2} radius="xl" /> {/* icon size & weight */}
+            <img src={i.src} alt={i.label} className="social-icon" />
           </ActionIcon>
-          <span className="social-text">{i.label}</span>
+          {/* <span className="social-text">{i.label}</span> */}
         </a>
       ))}
     </div>

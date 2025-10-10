@@ -14,8 +14,10 @@ export async function loginUser(payload) {
   }
 
   // Save JWT and user info
+   
   localStorage.setItem("jwt", data.jwt);
   localStorage.setItem("user", JSON.stringify(data.user));
+
 
   return data;
 }

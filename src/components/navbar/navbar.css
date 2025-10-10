@@ -1,0 +1,167 @@
+:root{
+  --nav-amber: #f68b00;
+  --nav-ink: #ffffff;
+  --nav-glass-1: rgba(18,18,18,.44);
+  --nav-glass-2: rgba(24,24,24,.62);
+  --burger-gap: 16px; /* space from right edge */
+}
+
+/* ====== Sticky header (does NOT add page space) ====== */
+.nav-wrap{
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 68px;
+  z-index: 1000;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding-inline: clamp(16px, 4vw, 80px);
+  background: linear-gradient(0deg, var(--nav-glass-1), var(--nav-glass-2));
+  border-top: 3px solid rgba(255,162,1,.55);
+  /* backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); */
+  overflow: visible;
+}
+
+/* Mobile scrim */
+.nav-scrim{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+  z-index: 999;
+}
+.nav-scrim.show{ opacity: 1; pointer-events: auto; }
+
+.brand-logo{
+  width: clamp(110px, 12vw, 160px);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.35));
+}
+
+/* Desktop nav */
+.navbar { display: flex; justify-content: center; }
+.navbar ul{
+  display:flex; align-items:center; justify-content:center;
+  gap: clamp(18px, 5vw, 64px);
+  margin:0; padding:0; list-style:none; white-space:nowrap;
+}
+.navbar li{ position: relative; }
+
+.nav-link{
+  font: 600 clamp(16px, 1.6vw, 22px)/1 "Montserrat", system-ui, sans-serif;
+  color: var(--nav-ink);
+  background: none; border: 0; cursor: pointer;
+  padding: 6px 0;
+  text-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+.nav-link:hover{ opacity: .92; }
+.nav-link.active{
+  color: var(--nav-amber);
+  text-shadow: 0 0 6px rgba(246,139,0,.35);
+}
+
+/* Burger */
+.nav-burger{
+  display: none;
+  width: 42px; height: 42px;
+  border: 0; border-radius: 10px;
+  background: rgba(0,0,0,.32);
+  place-items: center;
+
+  cursor: pointer;
+  position: relative;
+  z-index: 1002;
+}
+.nav-burger .line{
+  display:block; width: 22px; height: 2px;
+  background: var(--nav-amber);
+  margin: 4px auto;
+  transition: transform .25s ease, opacity .25s ease;
+  transform-origin: 50% 50%;
+}
+/* Make Login look like the other links */
+.nav-link,
+.login-link {
+  font: inherit;
+  color: var(--nav-ink);
+  background: none;
+  border: 0;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.nav-link.active {
+  color: var(--nav-amber);
+}
+
+/* Optional: a tiny visual distinction for Login on hover */
+.login-link:hover {
+  color: var(--nav-amber);
+}
+
+/* Mobile */
+@media (max-width: 900px){
+ 
+  :root { --burger-gap: 28px; } /* 🔹 increased spacing */
+
+  .nav-wrap {
+    grid-template-columns: auto 1fr auto;
+    height: 64px;
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    /* 🔹 add more breathing space on the right */
+    padding-right: calc(max(16px, env(safe-area-inset-right, 0px)) + var(--burger-gap));
+    overflow: visible;
+  }
+
+  .nav-burger {
+    display: grid;
+    margin-right: var(--burger-gap);
+    justify-self: end;
+    border-radius: 12px;
+  }
+
+
+
+  .brand-logo{ width: 96px; }
+
+
+  .navbar{
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 64px);
+    right: calc(max(12px, env(safe-area-inset-right, 0px)) + var(--burger-gap));
+    left: auto;
+    width: min(76vw, 280px);
+
+    background: rgba(18,18,18,.90);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(0,0,0,.32);
+
+    opacity: 0; pointer-events: none; transform: translateY(-12px);
+    transition: opacity .22s ease, transform .22s ease;
+  }
+  .nav-wrap.is-open .navbar, .navbar.open{
+    opacity: 1; pointer-events: auto; transform: translateY(0);
+  }
+
+  .navbar ul{
+    flex-direction: column; align-items: stretch;
+    gap: 10px; padding: 12px;
+  }
+
+  .nav-wrap.is-open .nav-burger .line:nth-child(1){ transform: translateY(6px) rotate(45deg); }
+  .nav-wrap.is-open .nav-burger .line:nth-child(2){ opacity: 0; }
+  .nav-wrap.is-open .nav-burger .line:nth-child(3){ transform: translateY(-6px) rotate(-45deg); }
+}
+
+/* Stability at zoom */
+.navbar ul, .nav-wrap{ transform: translateZ(0); will-change: transform; }
+
+/* Anchor scroll offset for fixed header */
+section[id]{ scroll-margin-top: 72px; }

@@ -10,28 +10,48 @@
   --bk-shadow: rgba(0,0,0,.4);
 }
 
-/* =============== Shell =============== */
-.bk-page{
-  display:grid;
-  place-items:start center;
-  padding:18px 12px;
-  color:var(--bk-ink);
+/* ===== NEW: fullscreen overlay (see-through + blur) ===== */
+.bk-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,.45);        /* see your page behind */
+  /* backdrop-filter: blur(2px); */
+  /* -webkit-backdrop-filter: blur(2px); */
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow: auto; /* modal can scroll if content is tall */
 }
 
-.bk-container{ width:min(1240px, 96vw); }
+/* ===== NEW: modal container (centers your frame) ===== */
+.bk-modal{
+  width: min(1280px, 96vw);
+}
+
+/* =============== Shell (kept, but used inside modal) =============== */
+.bk-page{
+  /* not used anymore to lay out the page, but keep colors */
+  display: grid;
+  place-items: start center;
+  padding: 0;
+  color: var(--bk-ink);
+}
+
+.bk-container{ width: 100%; }
 
 .bk-frame{
   border:1px solid var(--bk-stroke);
   border-radius:18px;
   background:linear-gradient(180deg,var(--bk-glass),var(--bk-glass-strong));
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  /* backdrop-filter: blur(6px); */
+  /* -webkit-backdrop-filter: blur(6px); */
   padding:16px;
   box-shadow:0 20px 40px var(--bk-shadow);
 }
 
 /* =============== Header & Alerts =============== */
-.bk-header{ padding:4px 6px 12px; }
+.bk-header{ padding:4px 6px 12px; position: relative; }
 .bk-title{ margin:0; font-size:clamp(22px,2.2vw,28px); font-weight:800; }
 .bk-sub{ margin:2px 0 0; color:var(--bk-muted); }
 
@@ -41,7 +61,7 @@
 .bk-alert-success{ background:rgba(55,208,123,.18); border:1px solid rgba(55,208,123,.45); }
 .bk-alert-error{ background:rgba(255,83,83,.16); border:1px solid rgba(255,83,83,.45); }
 
-/* =============== Grid Layout (Driving restored) =============== */
+/* =============== Grid Layout =============== */
 .bk-grid{
   display:grid;
   grid-template-columns: 1.05fr 1.05fr .9fr;
@@ -54,7 +74,6 @@
   align-items:start;
 }
 
-/* Area class hooks (use explicit classnames in JSX) */
 .account  { grid-area: account;  }
 .personal { grid-area: personal; }
 .driving  { grid-area: driving;  }
@@ -78,7 +97,7 @@
   font-size:.95rem; font-weight:800; letter-spacing:.3px; text-transform:uppercase;
 }
 
-/* Labels & fields (compact inline) */
+/* Labels & fields */
 .bk-label{
   display:grid;
   grid-template-columns:max-content 1fr;
@@ -117,7 +136,7 @@
   background:var(--bk-amber); color:#1a1a1a; box-shadow:0 4px 12px rgba(233,165,96,.35);
 }
 
-/* Safety radios (Yes/No) */
+/* Safety radios */
 .bk-yn{ display:grid; grid-template-columns: 1fr auto; align-items:center; gap:6px 8px; margin:2px 0; }
 .bk-yn-label{ font-size:.88rem; }
 .bk-toggle{ display:inline-flex; align-items:center; gap:14px; }
@@ -138,7 +157,7 @@
 /* Date indicator visible on dark */
 .bk-input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(1) opacity(.85); }
 
-/* Close button styling */
+/* Close button */
 .close-btn {
   position: absolute;
   top: 12px;
@@ -153,14 +172,11 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.25);
   transition: all 0.2s ease-in-out;
 }
-
-/* Hover effect */
 .close-btn:hover {
   background: #ffa201;
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
-
 
 /* =============== Responsive =============== */
 @media (max-width: 1100px){

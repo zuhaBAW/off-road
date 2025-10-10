@@ -8,7 +8,7 @@ export default function ContactPanel() {
   const initial = { name: "", email: "", mobile: "", service: "", message: "" };
   const [formData, setFormData] = useState(initial);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null);
+  // const [status, setStatus] = useState(null);
 
 
   const handleChange = (e) => {
@@ -60,13 +60,15 @@ export default function ContactPanel() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setStatus(null);
+    // setStatus(null);
+    // if (!initial.name || !initial.email || !initial.mobile || !initial.message) {
+    //   setStatus("error")
+    // }
     try {
-      // await submitContact(formData);
-      setStatus("success");
-      // setFormData(initial);
+      // setStatus("success");
+      setFormData(initial);
     } catch {
-      setStatus("error");
+      // setStatus("error");
     } finally {
       setLoading(false);
     }
@@ -79,7 +81,7 @@ export default function ContactPanel() {
      }
     
 
-     openWhatsAppSmart();
+    openWhatsAppSmart();
   };
 
   return (
@@ -109,6 +111,7 @@ export default function ContactPanel() {
             <input
               className="cp-input"
               name="name"
+              required:true
               placeholder="Name"
               value={formData.name}
               onChange={handleChange}
@@ -119,6 +122,7 @@ export default function ContactPanel() {
               className="cp-input"
               name="mobile"
               placeholder="Phone"
+              required:true
               type="tel"
               value={formData.mobile}
               onChange={handleChange}
@@ -132,6 +136,7 @@ export default function ContactPanel() {
             type="email"
             name="email"
             placeholder="Email"
+            required:true
             value={formData.email}
             onChange={handleChange}
             autoComplete="email"
@@ -152,28 +157,24 @@ export default function ContactPanel() {
             name="message"
             placeholder="Message"
             rows={6}
+            required:true
             value={formData.message}
             onChange={handleChange}
             required
           />
 
           <div className="cp-ctaRow">
-            <button
-              type="submit"
-              className="cp-cta"
-              disabled={loading}
-             
-            >
+            <button type="submit" className="cp-cta" disabled={loading}>
               {loading ? "Sending..." : "CONTACT US"}
             </button>
           </div>
 
-          {status === "success" && (
+          {/* {status === "success" && (
             <p className="success-text">✅ Message sent successfully!</p>
-          )}
-          {status === "error" && (
-            <p className="error-text">❌ Failed to send message. Try again.</p>
-          )}
+          )} */}
+          {/* {status === "error" && (
+            <p className="error-text">Please fill the required details</p>
+          )} */}
         </form>
       </div>
 

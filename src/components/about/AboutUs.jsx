@@ -7,7 +7,7 @@ import {
 } from "@tabler/icons-react";
 import { isLoggedIn, getLoggedInUser } from "../../api/loginApi";
 import { bookEvent } from "../../api/auth";
-import { fetchEvents } from "../../api/fetchEvents"; 
+import { fetchEvents } from "../../api/fetchEvents";
 import Banner from "./Banner";
 
 const AboutUsWithCalendar = () => {
@@ -16,15 +16,20 @@ const AboutUsWithCalendar = () => {
   const [currentDate, setCurrentDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1)
   );
-  const [events, setEvents] = useState({}); 
-  const [selectedEventDay, setSelectedEventDay] = useState(null); 
+  const [events, setEvents] = useState({}); // map: "YYYY-M-D" -> [events]
+  const [selectedEventDay, setSelectedEventDay] = useState(null); // { date, events }
   const [confirmationOpen, setConfirmationOpen] = useState(false);
+
+  // NEW: event picker modal state
+  const [pickerOpen, setPickerOpen] = useState(false);
+
   const [bookingDetails, setBookingDetails] = useState({
     Email: "",
     events: "",
     date: "",
   });
-
+  console.log(bookingDetails);
+  // Fetch calendar events and set initial month around first event
   useEffect(() => {
     (async () => {
       const map = await fetchEvents();
@@ -44,9 +49,14 @@ const AboutUsWithCalendar = () => {
     })();
   }, []);
 
+  // History back button closes any open modal in LIFO order
   useEffect(() => {
-    if (selectedEventDay || confirmationOpen) {
+    const anyModalOpen = pickerOpen || selectedEventDay || confirmationOpen;
+    if (anyModalOpen) {
       window.history.pushState({ modalOpen: true }, "");
+      document.body.style.overflow = "hidden"; // lock scroll while any modal open
+    } else {
+      document.body.style.overflow = ""; // release
     }
 
     const handlePopState = () => {
@@ -54,77 +64,138 @@ const AboutUsWithCalendar = () => {
         setConfirmationOpen(false);
         return;
       }
-
       if (selectedEventDay) {
         setSelectedEventDay(null);
+        return;
+      }
+      if (pickerOpen) {
+        setPickerOpen(false);
         return;
       }
     };
 
     window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [selectedEventDay, confirmationOpen]);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      // ensure unlock on unmount
+      if (!pickerOpen && !selectedEventDay && !confirmationOpen) {
+        document.body.style.overflow = "";
+      }
+    };
+  }, [pickerOpen, selectedEventDay, confirmationOpen]);
 
-  
-  console.log(events, "events");
+  // Esc to close topmost modal
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== "Escape") return;
+      if (confirmationOpen) return setConfirmationOpen(false);
+      if (selectedEventDay) return setSelectedEventDay(null);
+      if (pickerOpen) return setPickerOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [pickerOpen, selectedEventDay, confirmationOpen]);
+
+  // Helpers for calendar
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const monthName = currentDate.toLocaleString("default", { month: "long" });
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayOffset = (new Date(year, month, 1).getDay() + 6) % 7;
-
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
-
   const weekdays = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
   const openDay = (date) => {
     const key = `${date.getFullYear()}-${
       date.getMonth() + 1
     }-${date.getDate()}`;
-
     const dayEvents = events[key] || [];
-
     if (dayEvents.length > 0) {
-      console.log("✅ Found event(s):", dayEvents);
       setSelectedEventDay({ date, events: dayEvents });
-    } else {
-      console.log("❌ No events found for this date.");
     }
+    document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // book now
+  // ---- ACTIVE EVENTS PICKER LOGIC ----
+  // Convert your events map into an array of event rows with date/time
+  const flattenEvents = (map) => {
+    if (!map) return [];
+    const rows = [];
+    Object.entries(map).forEach(([key, list]) => {
+      const [y, m, d] = key.split("-").map(Number);
+      const dateObj = new Date(y, m - 1, d);
+      (list || []).forEach((ev) => {
+        let evDate =
+          ev?.dateObj instanceof Date && !isNaN(ev.dateObj)
+            ? ev.dateObj
+            : ev?.isoDate
+            ? new Date(ev.isoDate)
+            : dateObj; // fallback to map key date
+        rows.push({
+          keyDate: dateObj, // normalized day date
+          evDate, // specific time if available
+          dayKey: key,
+          ...ev,
+        });
+      });
+    });
+    // Sort by event date/time
+    rows.sort(
+      (a, b) =>
+        (a.evDate?.getTime?.() ?? a.keyDate) -
+        (b.evDate?.getTime?.() ?? b.keyDate)
+    );
+    return rows;
+  };
+
+  // Decide if an event is "active" — keep simple: today or future, or ev.active===true
+  const isActiveEvent = (row) => {
+    const now = new Date();
+    // if the payload has a boolean 'active', prefer that
+    if (typeof row.active === "boolean") return row.active;
+    const cmp =
+      row.evDate instanceof Date && !isNaN(row.evDate)
+        ? row.evDate
+        : row.keyDate;
+    // same-day is allowed
+    return cmp.setHours(0, 0, 0, 0) >= now.setHours(0, 0, 0, 0);
+  };
+
+  const allRows = flattenEvents(events);
+  const activeRows = allRows.filter(isActiveEvent);
+
+  // “Register For Event” → open picker instead of picking first event
   const handleTopBookClick = () => {
     if (!isLoggedIn()) {
       alert("You need to login first!");
       document.getElementById("home")?.scrollIntoView({ behavior: "smooth" });
-
       return;
     }
-
-    const eventKeys = Object.keys(events).sort(
-      (a, b) => new Date(a) - new Date(b)
-    );
-
-    if (eventKeys.length === 0) {
-      alert("No events available to book yet!");
+    if (!activeRows.length) {
+      alert("No active events available to book yet!");
       return;
     }
-
-    const firstEventKey = eventKeys[0];
-    setSelectedEventDay({
-      date: new Date(firstEventKey),
-      events: events[firstEventKey],
-    });
+    setPickerOpen(true);
+    document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
   };
 
- 
+  // When user picks an event in the picker
+  const handleChooseEvent = (row) => {
+    // open your existing day modal preloaded with that event's day + list
+    const dayEvents = events[row.dayKey] || [];
+    const [y, m, d] = row.dayKey.split("-").map(Number);
+    setSelectedEventDay({ date: new Date(y, m - 1, d), events: dayEvents });
+    setPickerOpen(false);
+  };
+
   return (
     <div id="about">
       {/* About Us */}
       <div className="banner">
         <Banner data={events} />
       </div>
+
       <div className="app-container">
         <div className="about-us-container">
           <h1 className="about-us-title">ABOUT US</h1>
@@ -138,6 +209,7 @@ const AboutUsWithCalendar = () => {
           </button>
         </div>
 
+        {/* Calendar */}
         <div className="calendar-container">
           <div className="calendar-header">
             <IconCircleChevronLeftFilled onClick={prevMonth} />
@@ -194,12 +266,110 @@ const AboutUsWithCalendar = () => {
           </div>
         </div>
 
-        {selectedEventDay && (
-          <div className="modal-overlay">
-            <div className="modal-content">
+        {/* ===================== Event Picker Modal (NEW) ===================== */}
+        {pickerOpen && (
+          <div
+            className="modal-overlay"
+            onClick={() => setPickerOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Select an event"
+          >
+            <div
+              className="modal-content event-picker"
+              onClick={(e) => e.stopPropagation()}
+            >
               <button
                 className="modal-close"
+                type="button"
+                onClick={() => setPickerOpen(false)}
+                aria-label="Close"
+              >
+                <IconX size={20} />
+              </button>
+              <h2 className="modal-title">Choose an Event</h2>
+
+              {activeRows.length ? (
+                <div className="event-list">
+                  {activeRows.map((row) => {
+                    const when =
+                      row.evDate instanceof Date && !isNaN(row.evDate)
+                        ? `${row.evDate.toLocaleDateString(undefined, {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })} • ${row.evDate.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}`
+                        : new Date(row.keyDate).toLocaleDateString(undefined, {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          });
+
+                    return (
+                      <div
+                        key={`${row.dayKey}-${row.id ?? row.title}`}
+                        className="event-card"
+                      >
+                        <div className="event-card-main">
+                          <div className="event-card-title">{row.title}</div>
+                          <div className="event-card-meta">
+                            <span>📍 {row.location ?? "TBA"}</span>
+                            <span>⏰ {when}</span>
+                          </div>
+                        </div>
+                        <div className="event-card-actions">
+                          <button
+                            className="book-now-button"
+                            type="button"
+                            onClick={() => handleChooseEvent(row)}
+                          >
+                            Select
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="modal-text">No active events available.</p>
+              )}
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: 12,
+                }}
+              >
+                <button
+                  className="cancel-button"
+                  type="button"
+                  onClick={() => setPickerOpen(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ===================== Per-day Event Modal (existing) ===================== */}
+        {selectedEventDay && (
+          <div
+            className="modal-overlay"
+            onClick={() => setSelectedEventDay(null)}
+          >
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <button
+                className="modal-close"
+                type="button"
                 onClick={() => setSelectedEventDay(null)}
+                aria-label="Close"
               >
                 <IconX size={20} />
               </button>
@@ -213,6 +383,7 @@ const AboutUsWithCalendar = () => {
                   year: "numeric",
                 })}
               </h2>
+
               {selectedEventDay.events.map((ev) => {
                 const evDate =
                   ev.dateObj instanceof Date && !isNaN(ev.dateObj)
@@ -241,7 +412,7 @@ const AboutUsWithCalendar = () => {
 
                   const user = getLoggedInUser();
                   if (!user) return;
-
+                 
                   const bookingPayload = {
                     Email: user.email,
                     EventDetails: ev.title,
@@ -251,24 +422,27 @@ const AboutUsWithCalendar = () => {
                         : null,
                   };
 
-                  setBookingDetails(bookingDetails);
+                  setBookingDetails(bookingPayload); // fix: actually set the payload
 
                   try {
                     await bookEvent(bookingPayload);
                     setConfirmationOpen(true);
                   } catch (err) {
-                    alert("Booking failed: " + err.message);
+                    alert(
+                      "Booking failed: " + (err?.message ?? "Unknown error")
+                    );
                   }
                 };
 
                 return (
-                  <div key={ev.id} className="event-block">
+                  <div key={ev.id ?? ev.title} className="event-block">
                     <h3 className="event-title">{ev.title}</h3>
-                    <p className="modal-text">📍 {ev.location}</p>
+                    <p className="modal-text">📍 {ev.location ?? "TBA"}</p>
                     <p className="modal-text">⏰ {timeText}</p>
                     <div className="modal-actions">
                       <button
                         className="book-now-button"
+                        type="button"
                         onClick={handleRegisterClick}
                       >
                         Register
@@ -279,25 +453,33 @@ const AboutUsWithCalendar = () => {
               })}
 
               {confirmationOpen && (
-                <div className="modal-confirmation">
-                  <div className="modal-content">
+                <div
+                  className="modal-confirmation"
+                  onClick={() => setConfirmationOpen(false)}
+                >
+                  <div
+                    className="modal-content"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <h2>Registration Confirmed!</h2>
                     <p>You have successfully registered for the event.</p>
                     <button
+                      type="button"
                       onClick={() => {
                         setConfirmationOpen(false);
                         document
-                          .getElementById("home")
+                          .getElementById("explore")
                           ?.scrollIntoView({ behavior: "smooth" });
                         setSelectedEventDay(null);
                       }}
                       className="cancel-button-1"
                     >
-                      Back to Home
+                      Close
                     </button>
                   </div>
                 </div>
               )}
+
               <div
                 style={{
                   display: "flex",
@@ -307,6 +489,7 @@ const AboutUsWithCalendar = () => {
               >
                 <button
                   className="cancel-button"
+                  type="button"
                   onClick={() => setSelectedEventDay(null)}
                 >
                   Close

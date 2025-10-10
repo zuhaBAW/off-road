@@ -1,170 +1,94 @@
-
-/* Basic Carousel Styling */
-.image-carousel {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  gap: 15px;
-  padding: 15px 0;
-  width: 100%;
-  max-width: 1200px;  /* 🔥 You can remove this */
-}
-
-
-.carousel-item {
-  flex-shrink: 0; 
-  width: 300px;
-  height: 200px; 
-  object-fit: cover; 
-  border-radius: 8px;
-  scroll-snap-align: center;
-}
-
-
-.carousel-wrapper-in-explore {
+.explore-hero {
   position: relative;
+  height: 100dvh;                 /* 🔥 fit exactly one viewport */
   width: 100%;
-}
-
-.explore-right .back-button {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 5;
-  background: #f68b00;
-  border: none;
-  color: white;
-  padding: 10px 16px;
-  font-size: 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-
-/* full-bleed background */
-.explore-section{
-  position: relative;
-  min-height: 92vh;
   color: #fff;
-  isolation: isolate;
-
-  /* 2 background layers:
-     1) dark veil
-     2) actual image we want to position precisely */
-  background-image:
-    linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)),
-    var(--explore-bg);
-  background-repeat: no-repeat, no-repeat;
-  background-size: auto, cover;             
-}
-
-
-/* 2-column canvas: title left, photos right */
-
-.explore-inner{
-  width:min(1200px,94vw);
-  margin:0 auto;
-  display:grid;
-  grid-template-columns: 0.8fr 1.2fr; 
-    /* left title / right images */
-  gap:clamp(20px,2vw,48px);
-  align-items:start;                    /* keep title at top-left */
-  padding-block:clamp(32px,6vh,64px);
-}
-
-/* left column: headline */
-.explore-left{ text-align:left; }
-
-.explore-title{
-  font-family: 'SGlitch';
-  color: #f68b00; /* Orange-ish color from image */
-  margin-bottom: 20px;
-  font-weight: bold;
-  margin:0;
-  /* font-family:"SGlitch",sans-serif; */
-  font-weight:200;
-  font-size:clamp(56px,9.5vw,140px);
-  line-height:.9;
-  letter-spacing:.03em;
-  margin-left: -40px;
-  text-transform:uppercase;
-  text-shadow:0 3px 18px rgba(0,0,0,.55);
-}
-.explore-subtitle{
-  margin: clamp(6px,1vw,12px) 0 0;
-  font-family:"Kollegan",cursive;
-  font-weight:50 !important;
-  font-size:clamp(28px,3vw,64px);
-  line-height:1;
-  margin-left: 60px;
-  color:#fff;
-  text-shadow:0 4px 20px rgba(0,0,0,.6);
-  white-space:nowrap;
-}
-
-/* right column: two tall photos in a row (horizontal) */
-.explore-right {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: clamp(18px, 3vw, 28px);
-  margin-left: clamp(20px, 3vw, 40px); /* ✅ Pushes it more to the right */
-}
-.carousel-wrapper-in-explore {
-  position: fixed; /* ⬅ makes it float above everything */
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh; /* or use 75vh for 3/4 height */
-  background: rgba(0, 0, 0, 0.95);
-  display: flex;
+  justify-content: space-between; /* 🟧 space out title & gallery nicely */
   align-items: center;
+
+  /* Background */
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+    var(--explore-bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  isolation: isolate;
+  /* padding: clamp(32px, 1vh, 64px) 16px; */
+}
+
+.explore-wrap {
+  width: min(1200px, 94vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(24px, 5vh, 40px);
+  flex: 1;
   justify-content: center;
-  z-index: 9999;
 }
 
-.carousel-wrapper-in-explore .back-button {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 10000;
-  padding: 10px 16px;
+.explore-head {
+  text-align: center;
+  /* margin-top: clamp(10px, 2vh, 60px); */
+}
+
+.explore-title {
+  font-family: "SGlitch", sans-serif;
+  font-size: clamp(68px, 10vw, 160px);
+  color: #f68b00;
+    font-weight: 200;
+
+  line-height: 0.6;
+  text-transform: uppercase;
+  margin: 0;
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.55);
+}
+
+.explore-sub {
+  font-family: "Kollegan", cursive;
+  font-size: clamp(32px, 2vw, 68px);
+  color: #fff;
+  margin-top: 8px;
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
+  display: inline-block;
+  margin-left: clamp(10vw, 18%, 18vw); /* move to the right */
+  text-align: left;
+}
+
+
+/* ====================== Modal base ====================== */
+.gallery-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.92);
+  z-index: 100000;
+  display: grid;
+  place-items: center;
+  overscroll-behavior: contain;
+}
+.gallery-surface{
+  position: relative;
+  width: min(1200px, 96vw);
+  height: min(900px, 92vh);
+}
+.gallery-back{
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 100001;
+  padding: 8px 12px;
+  border-radius: 10px;
   background: #f68b00;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  color: #111;
+  border: 0;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 1rem;
 }
 
-
-.explore-card{
-  border:2px solid  #f68b00;;
-  background:rgba(0,0,0,.18);
-  padding:clamp(6px,.8vw,10px);        /* thin inner frame */
-}
-.explore-card img{
-  display:block;
-  width:100%;
- --bgx: "68%";
-
-height: calc(clamp(360px, 52vh, 640px) * 1.5);
-    
-  object-fit:cover;
-}
-
-/* mobile: stack with title first, photos become two columns or single */
-@media (max-width:900px){
-  .explore-inner{ grid-template-columns:1fr; }
-  .explore-left{ text-align:center; }
-  .explore-right{ grid-template-columns: 1fr 1fr; }
-}
-@media (max-width:560px){
-  .explore-right{ grid-template-columns:1fr; } /* one per row on very small screens */
-}
+/* ====================== Utility ====================== */
 @media (max-width: 700px){
-  .explore-section::before{
-    background-size: cover;
-    background-position: center;
-  }
+  .explore-hero{ padding: 28px 12px; }
 }

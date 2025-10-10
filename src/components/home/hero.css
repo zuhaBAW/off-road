@@ -1,0 +1,147 @@
+/* ------------------------------------------------------------------
+   HOME HERO — left-balanced layout
+   ------------------------------------------------------------------ */
+:root{
+  --hero-amber: #f68b00;
+  --hero-ink: #f5f2ef;
+}
+
+html, body { margin:0; padding:0; overflow-x: hidden; }
+
+/* NEVER add top space for the fixed nav (overlay) */
+.home-section {
+ 
+
+  position: relative;
+  margin-top: -68px; /* same as navbar height */
+  z-index: 0;
+}
+
+
+.nav-wrap {
+  position: fixed;
+  
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+
+.home-section{
+  position: relative;
+  min-height: 100dvh;
+  
+  display: grid;
+  place-items: stretch;
+  color: var(--hero-ink);
+  overflow: clip;
+}
+
+/* main hero */
+.home-hero{
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-height: 100dvh; /* nav overlays; we don’t reserve height */
+}
+
+.home-hero__inner{
+  width: min(1200px, 94vw);
+  margin-inline: auto;
+  position: relative;
+}
+
+/* copy block (further left) */
+.home-hero__copy {
+  position: relative;
+  margin-top: clamp(36px, 12vh, 20vh);
+  margin-left: clamp(3vw, 3vw, 120px); /* More left alignment */
+  text-shadow: 0 3px 18px rgba(0,0,0,.55);
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+
+/* OFF-ROAD */
+.home-hero__title{
+  margin: 0;
+  font-family: "SGlitch", system-ui, sans-serif;
+  font-weight: 200;
+  width: auto;
+  font-size: clamp(10vw, 11vw, 100px);
+  line-height: .9;
+  letter-spacing: .04em;
+  color: var(--hero-amber);
+}
+
+/* Adventure — smaller & balanced */
+.home-hero__script{
+  margin: 0.15em 0 0;
+  font-family: "Kollegan", cursive;
+  font-weight: 50;
+  font-size: clamp(32px, 3.5vw, 90px);
+  line-height: .9;
+  color: #fff;
+  position: relative;
+  left: clamp(3vw, 10vw, 12vw); /* starts near middle of OFF-ROAD */
+}
+
+/* Tagline — compact, aligned */
+.home-hero__tag{
+  margin-top: clamp(10px, 1vw, 14px);
+  width: fit-content;
+  padding: 10px 16px;
+  /* border-radius: 5px; */
+  background: rgba(0,0,0,.32);
+  border: 3px solid rgba(255,255,255,.18);
+  /* backdrop-filter: blur(1px); */
+  /* -webkit-backdrop-filter: blur(5px); */
+  box-shadow: 0 6px 16px rgba(0,0,0,.35);
+}
+.home-hero__tag span{
+  display:block;
+  font-size: clamp(2vw, 2vw, 18px);
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: .4px;
+}
+
+/* --------------------- Responsive --------------------- */
+@media (max-width: 900px) {
+  .home-hero__copy {
+    margin-top: clamp(28px, 10vh, 14vh);
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+.home-hero__title{
+  margin: 0;
+  font-family: "SGlitch", system-ui, sans-serif;
+  font-weight: 200;
+  font-size: clamp(11vw, 18vw, 140px);
+  line-height: .9;
+  letter-spacing: .04em;
+  color: var(--hero-amber);
+}
+  .home-hero__script {
+    left: 0;
+    margin-left: 0;
+     font-weight: 100;
+  font-size: clamp(6vw, 8vw, 140px);
+  }
+
+  .home-hero__tag {
+    margin-top: 12px;
+    padding: 8px 14px;
+  }
+
+  .home-hero__tag span {
+    font-size: clamp(12px, 3.8vw, 16px);
+  }
+}

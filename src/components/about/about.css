@@ -221,7 +221,7 @@ html, body {
 }
 
 .modal-content {
-  background: #ffffff;
+  background: #040404;
   padding: 2rem;
   border-radius: 16px;
   width: min(400px, 90%);
@@ -274,3 +274,106 @@ html, body {
 .cancel-button:hover {
   background: #bbb;
 }
+/* ===== Event Picker list styles (NEW) ===== */
+.event-picker {
+  max-height: min(80vh, 720px);
+  overflow: auto;
+}
+
+.event-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.event-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  background: #111;
+  color: #eee;
+  border: 1px solid #f68b00;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.event-card-main {
+  display: grid;
+  gap: 6px;
+}
+
+.event-card-title {
+  font-weight: 700;
+  color: #f6a14a;
+}
+
+.event-card-meta {
+  font-size: 0.95rem;
+  display: grid;
+  gap: 4px;
+  color: #d9d6d6;
+}
+
+.event-card-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* keep buttons consistent */
+.event-card .book-now-button {
+  white-space: nowrap;
+}
+/* === Transparent "glass" cards for both modals & sub-cards === */
+.modal-content {
+  /* make the main modal card transparent */
+  background: transparent !important;
+  color: #f5f2ef;
+  border: 1px solid #f68b00;
+  border-radius: 16px;
+  box-shadow: none;
+  /* keep a tiny blur so text pops above the page */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* confirmation modal's inner card too */
+.modal-confirmation .modal-content {
+  background: transparent !important;
+  color: #f5f2ef;
+  border: 1px solid #f68b00;
+  border-radius: 16px;
+  box-shadow: none;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* event picker list card */
+.event-card {
+  background: transparent !important;
+  color: #eee;
+  border: 1px solid #f68b00;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+/* details blocks in the day modal (sub-cards) */
+.event-block {
+  background: transparent !important;
+  color: #eee;
+  /* border: 1px solid #f68b00; */
+  border-radius: 12px;
+  padding: 12px;
+}
+
+/* optional: lighten the overlay a bit so background shows more */
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.45); /* was 0.6 */
+}
+
+/* keep titles and meta readable on transparent bg */
+.event-card-title,
+.modal-title { color: #f6a14a; }
+.event-card-meta,
+.modal-text   { color: #d9d6d6; }

@@ -1,22 +1,38 @@
-.album-preview-carousel {
-  display: flex;
-  gap: clamp(18px, 3vw, 28px);
+.album-row {
+  position: relative;
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+}
+
+/* larger cards, fill space better */
+.album-scroller {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(280px, 380px);
+  gap: 24px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding-bottom: 10px;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 4px 20px;
 }
 
 .album-preview-card {
-  scroll-snap-align: center;
-  flex-shrink: 0;
-  border: 2px solid #f68b00;
-  background: rgba(0, 0, 0, 0.18);
-  padding: clamp(6px, 0.8vw, 10px);
-  width: 100%;
-  max-width: 300px;
-  height: calc(clamp(360px, 52vh, 640px) * 1.5);
   position: relative;
+  scroll-snap-align: center;
+  border: 2px solid #f68b00;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 14px;
+  overflow: hidden;
+  height: 340px; /* ⬆️ increased from 260px */
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.album-preview-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
 }
 
 .album-preview-card img {
@@ -24,16 +40,142 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  filter: saturate(1);
 }
 
-.album-preview-title {
+.album-overlay {
   position: absolute;
-  bottom: 0;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  text-align: center;
-  padding: 0.5rem;
-  font-weight: bold;
-  font-size: 1rem;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.75) 80%);
+  color: #fff;
 }
+
+.album-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.album-cta {
+  background: #f68b00;
+  color: #111;
+  font-weight: 800;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.row-arrow {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.55);
+  color: #f5f2ef;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease, filter 0.2s ease;
+}
+
+.row-arrow:hover {
+  filter: brightness(1.2);
+  transform: scale(1.05);
+}
+
+.row-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.swipe-hint {
+  position: absolute;
+  right: 12px;
+  bottom: -8px;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  background: rgba(246, 139, 0, 0.85);
+  color: #111;
+  font-weight: 800;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+}
+
+/* responsive */
+/* ===== Mobile (keep horizontal row, remove side gaps) ===== */
+/* ===== Mobile (fit width + keep arrows) ===== */
+@media (max-width: 720px) {
+  .album-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;   /* arrows - carousel - arrows */
+    align-items: center;
+    gap: 6px;
+    width: 100vw;
+    overflow: hidden;                       /* 🚫 no scroll bleed */
+    box-sizing: border-box;
+  }
+
+  .album-scroller {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 12px;
+    margin: 0 auto;
+    padding: 0 0 12px 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .album-preview-card {
+    flex: 0 0 85vw;                         /* fills most of screen */
+    height: min(60vh, 420px);
+    border-radius: 12px;
+    margin: 0;
+    scroll-snap-align: center;
+  }
+
+  /* ✅ keep arrows visible but adjust size/placement */
+  .row-arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #f5f2ef;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.3s ease;
+  }
+
+  .row-arrow:hover {
+    background: rgba(246, 139, 0, 0.85);
+    transform: scale(1.1);
+  }
+
+  /* optional: tighter arrows positioning */
+  .album-row > .row-arrow:first-child {
+    margin-left: 4px;
+  }
+  .album-row > .row-arrow:last-child {
+    margin-right: 4px;
+  }
+
+  /* prevent body-level horizontal scroll */
+  body, html {
+    overflow-x: hidden !important;
+  }
+}
+
+

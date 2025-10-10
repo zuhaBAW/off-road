@@ -1,21 +1,30 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
 import "./register.css";
 import { createRegistration } from "../../api/registerApi";
 import { useNavigate } from "react-router-dom";
 
-export default function RegistrationForm() {
+/**
+ * Usage:
+ * const [open, setOpen] = useState(false);
+ * <button onClick={() => setOpen(true)}>Register</button>
+ * <RegistrationForm isOpen={open} onClose={() => setOpen(false)} />
+ */
+export default function RegistrationForm({ isOpen, onClose }) {
   const currentYear = new Date().getFullYear();
+
+  // ---- Hooks must always run (before any conditional return)
   const formRef = useRef(null);
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    // Auth (Strapi requires these)
+    // Auth
     username: "",
     email: "",
     password: "",
 
     // Personal
-    fullName: "", // shown in UI only
+    fullName: "",
     dob: "",
     nationality: "",
 
@@ -24,8 +33,7 @@ export default function RegistrationForm() {
     city: "",
 
     // Driving
-   
-    offroadLevel: "", // beginner|intermediate|expert (we’ll capitalize for payload)
+    offroadLevel: "",
 
     // Vehicle
     makeModel: "",
@@ -39,7 +47,7 @@ export default function RegistrationForm() {
     emerPhone: "",
     emerRelation: "",
 
-    // Safety (yes/no)
+    // Safety
     recGear: "",
     fireExt: "",
     firstAid: "",
@@ -56,17 +64,37 @@ export default function RegistrationForm() {
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState({ type: "", text: "" });
 
+  // Lock body scroll & enable Esc to close when open
+  useEffect(() => {
+    if (!isOpen) return; // effect can be conditional (hooks still called)
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+    window.addEventListener("keydown", onKey);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [isOpen, onClose]);
+
+  // ---- After hooks, it’s safe to early return
+  if (!isOpen) return null;
+
+  // Helpers
   const setField = (e) => {
     const { name, value } = e.target;
     setForm((s) => ({ ...s, [name]: value }));
   };
-
-  // helpers
   const ynToBool = (v) => (v === "yes" ? true : v === "no" ? false : null);
   const emptyToNull = (v) => (v === "" ? null : v);
   const cap1 = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
-  // EXACT payload that Strapi route expects
+  // Payload for Strapi route
   const buildPayload = () => ({
     username: form.username,
     email: form.email,
@@ -77,7 +105,7 @@ export default function RegistrationForm() {
     MobileNo: emptyToNull(form.mobile),
     City: emptyToNull(form.city),
 
-    OffRoadLevel: emptyToNull(cap1(form.offroadLevel)), // Beginner|Intermediate|Expert
+    OffRoadLevel: emptyToNull(cap1(form.offroadLevel)),
 
     VehicalMakeModel: emptyToNull(form.makeModel),
     Year: form.year === "" ? null : Number(form.year),
@@ -103,8 +131,6 @@ export default function RegistrationForm() {
 
   const submit = async (e) => {
     e.preventDefault();
-
-    // Run native HTML5 validation (shows bubbles for any invalid field)
     if (!formRef.current?.reportValidity()) return;
 
     setMsg({ type: "", text: "" });
@@ -113,10 +139,9 @@ export default function RegistrationForm() {
     try {
       setSubmitting(true);
       await createRegistration(payload);
-
       setMsg({ type: "success", text: "Registration submitted successfully!" });
 
-      // Keep auth identity; clear the rest (also clear password).
+      // Reset most fields
       setForm((s) => ({
         ...s,
         password: "",
@@ -144,32 +169,45 @@ export default function RegistrationForm() {
         spareTire: "",
         medical: "",
       }));
+
+      // Optional: close + navigate
       setTimeout(() => {
+        onClose?.();
         navigate("/home");
-      }, 2000); 
-
-
-
-     
+      }, 1200);
     } catch (err) {
-      console.log(err,"errror")
-      const text = "Registration failed. This email or username might already be in use.";
-      setMsg({ type: "error", text });
+      console.log(err, "error");
+      setMsg({
+        type: "error",
+        text: "Registration failed. This email or username might already be in use.",
+      });
     } finally {
       setSubmitting(false);
     }
   };
 
-  return (
-    <div className="bk-page">
-      <div className="bk-container">
-        <div className="bk-frame">
+  // Click outside should close (but clicks inside shouldn't bubble)
+  const stop = (e) => e.stopPropagation();
+
+  const modal = (
+    <div
+      className="bk-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="bk-modal-title"
+      onClick={onClose}
+    >
+      <div className="bk-modal" onClick={stop}>
+        <div className="bk-frame" >
           <header className="bk-header">
-            <button className="close-btn" onClick={() => navigate("/home")}>
+            <button className="close-btn" onClick={onClose}>
               close
             </button>
-            <h1 className="bk-title">Register your details</h1>
+            <h1 id="bk-modal-title" className="bk-title">
+              Register your details
+            </h1>
             <p className="bk-sub">Please fill all fields</p>
+
             {msg.text ? (
               <div
                 className={`bk-alert ${
@@ -321,12 +359,10 @@ export default function RegistrationForm() {
               </label>
             </section>
 
-            {/* Driving (RESTORED) */}
+            {/* Driving */}
             <section className="bk-card driving">
               <h4 className="bk-card-title">Off road Experience</h4>
-
               <div className="bk-label" style={{ alignItems: "center" }}>
-                {/* Off-Road Level <span className="bk-asterisk">*</span> */}
                 <div className="bk-chips" style={{ marginTop: 0 }}>
                   <input
                     id="lvl-beg"
@@ -481,7 +517,7 @@ export default function RegistrationForm() {
               ))}
             </section>
 
-            {/* Medical (wide + fills the gap) */}
+            {/* Medical */}
             <section className="bk-card medical">
               <h4 className="bk-card-title">Medical Conditions</h4>
               <textarea
@@ -494,7 +530,7 @@ export default function RegistrationForm() {
               />
             </section>
 
-            {/* Submit — centered */}
+            {/* Submit */}
             <div className="bk-actions">
               <button type="submit" className="bk-submit" disabled={submitting}>
                 {submitting ? "Submitting…" : "SUBMIT"}
@@ -505,4 +541,7 @@ export default function RegistrationForm() {
       </div>
     </div>
   );
+
+  // Render above the app with a portal
+  return ReactDOM.createPortal(modal, document.body);
 }

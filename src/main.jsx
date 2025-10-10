@@ -16,7 +16,7 @@ createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/register" element={<RegistrationForm />} />
-        <Route path="/home" element={<App />} />
+        {/* <Route path="/home" element={<App />} /> */}
 
         <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
         <Route path="*" element={<App />} />

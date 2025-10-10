@@ -2,16 +2,17 @@ import React, { useState, useEffect, useRef } from "react"; // NEW
 import "./index.css";
 import logo from "../../assets/logo.png";
 import ForgotPasswordModal from "../auth/ForgotPassword"; // ⬅️ add this
-import { loginUser } from "../../api/loginApi"; // ⬅️ import your API function
-
+import { loginUser, logout } from "../../api/loginApi"; // ⬅️ import your API function
+import RegistrationForm from "../registration/Register";
 export default function Home() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [errors, setErrors] = useState({});
   const [showForgot, setShowForgot] = useState(false); // ⬅️ modal state
   const [loading, setLoading] = useState(false); // ⬅️ loading state
   const [loginError, setLoginError] = useState(""); // ⬅️ server error state
-  const [open, setOpen] = useState(false);
-
+  const [openRegistration, setOpenRegistration] = useState(false);
+   const [open, setOpen] = useState(false);
+  
   const wrapRef = useRef(null);
   const navRef = useRef(null);
 
@@ -63,45 +64,47 @@ export default function Home() {
     return errs;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoginError("");
-    const v = validate();
-    if (Object.keys(v).length) return setErrors(v);
-    setErrors({});
-    setLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoginError("");
+  const v = validate();
+  if (Object.keys(v).length) return setErrors(v);
+  setErrors({});
+  setLoading(true);
 
-    try {
-      const result = await loginUser({
-        identifier: formData.username,
-        password: formData.password,
-      });
+  try {
+    const result = await loginUser({
+      identifier: formData.username,
+      password: formData.password,
+    });
 
-      // Save JWT for authenticated requests
-      localStorage.setItem("jwt", result.jwt);
+    // Save JWT and user
+    localStorage.setItem("jwt", result.jwt);
+    localStorage.setItem("user", JSON.stringify(result.user));
 
-      alert(`Login successful! Welcome ${result.user.username}`);
-      setFormData({ username: "", password: "" });
-      document.getElementById("home")?.scrollIntoView({ behavior: "smooth" });
+    // Save scroll target before reload
+    localStorage.setItem("scrollTarget", "about");
 
-      // Optionally redirect or update state here
-    } catch (err) {
-      console.error("Login failed:", err);
-      let msg = err.message || "Login failed";
+    alert(`Login successful! Welcome ${result.user.username}`);
 
-      // Map common backend messages to user-friendly ones
-      if (
-        msg.includes("Internal Server Error") ||
-        msg.includes("password") ||
-        msg.includes("email")
-      )
-        msg = "Wrong email/username or password.";
+    // Reload the page (will scroll after reload)
+    window.location.reload();
+  } catch (err) {
+    console.error("Login failed:", err);
+    let msg = err.message || "Login failed";
+    if (
+      msg.includes("Internal Server Error") ||
+      msg.includes("password") ||
+      msg.includes("email")
+    )
+      msg = "Wrong email/username or password.";
 
-      setLoginError(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setLoginError(msg);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     const sections = document.querySelectorAll("section[id]");
@@ -144,7 +147,7 @@ export default function Home() {
               <a href="#about">About</a>
             </li>
             <li>
-              <a href="#services">Adventure</a>
+              <a href="#explore">Adventure</a>
             </li>
             <li>
               <a href="#testimonials">Testimonials</a>
@@ -153,7 +156,9 @@ export default function Home() {
               <a href="#contact">Contact</a>
             </li>
             <li>
-              <a href="#home">Login</a>
+              <a href="#home" onClick={() => logout()}>
+                logout
+              </a>
             </li>
           </ul>
         </nav>
@@ -221,10 +226,22 @@ export default function Home() {
                   {loginError && <p className="error-text">{loginError}</p>}
 
                   <p className="join-text">
-                    Not a member? <a href="/register">Join now</a>
+                    Not a member?{" "}
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setOpenRegistration(true);
+                      }}
+                    >
+                      Join now
+                    </a>
                   </p>
                 </div>
-
+                <RegistrationForm
+                  isOpen={openRegistration}
+                  onClose={() => setOpenRegistration(false)}
+                />
                 <button type="submit" className="login-btn" disabled={loading}>
                   {loading ? "Logging in..." : "Log In"}
                 </button>
