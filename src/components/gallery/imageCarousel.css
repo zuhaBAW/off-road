@@ -2,6 +2,9 @@
    Offroad Adda — Responsive Image Carousel
    ============================================ */
 
+:root { --oa-amber: #f68b00; }
+
+/* ---------- Base / Desktop ---------- */
 .carousel-container {
   position: relative;
   width: 100%;
@@ -9,7 +12,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: black;
+  background: #000;
   overflow: hidden;
 }
 
@@ -27,13 +30,17 @@
   transition: all 0.5s ease-in-out;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
 }
 
-.carousel-item img {
+.carousel-item img,
+.carousel-item video.carousel-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+  background: #000;
+  outline: none;
 }
 
 /* Active center image */
@@ -55,13 +62,8 @@
   opacity: 0.7;
 }
 
-.carousel-item.left {
-  transform: translateX(-60%) scale(0.9);
-}
-
-.carousel-item.right {
-  transform: translateX(60%) scale(0.9);
-}
+.carousel-item.left  { transform: translateX(-60%) scale(0.9); }
+.carousel-item.right { transform: translateX(60%)  scale(0.9); }
 
 .carousel-item.hidden {
   opacity: 0;
@@ -76,160 +78,186 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 4;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,0.5);
   border: none;
-  color: orange;
+  color: var(--oa-amber);
   font-size: 2rem;
   padding: 12px;
   cursor: pointer;
   border-radius: 50%;
   transition: background 0.2s ease;
 }
+.nav-button:hover { background: rgba(255,140,0,0.7); }
+.nav-button.left  { left: 40px; }
+.nav-button.right { right: 40px; }
 
-.nav-button:hover {
-  background: rgba(255, 140, 0, 0.7);
-}
-
-.nav-button.left {
-  left: 40px;
-}
-
-.nav-button.right {
-  right: 40px;
-}
-
-/* Back button (top-left) */
+/* Back button */
 .back-button {
   position: absolute;
   top: 20px;
   left: 20px;
   z-index: 9999;
   padding: 10px 16px;
-  background: rgba(255, 140, 0, 0.9);
+  background: rgba(255,140,0,0.9);
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s ease;
 }
+.back-button:hover { background: rgba(255,180,0,1); }
 
-.back-button:hover {
-  background: rgba(255, 180, 0, 1);
-}
-
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
-
-/* Tablet adjustments */
+/* ---------- Tablet (≤1024px) ---------- */
 @media (max-width: 1024px) {
-  .carousel-wrapper {
-    width: 100%;
-  }
-
-  .carousel-item.active {
-    width: 70%;
-    height: 90%;
-  }
-
-  .carousel-item.left,
-  .carousel-item.right {
-    width: 45%;
-    height: 80%;
-  }
-
-  .nav-button.left {
-    left: 20px;
-  }
-
-  .nav-button.right {
-    right: 20px;
-  }
+  .carousel-wrapper { width: 100%; }
+  .carousel-item.active { width: 70%; height: 90%; }
+  .carousel-item.left, .carousel-item.right { width: 45%; height: 80%; }
+  .nav-button.left { left: 20px; }
+  .nav-button.right { right: 20px; }
 }
 
-/* Mobile — full screen immersive view */
+/* ---------- Mobile (≤768px): Square stage, guaranteed visible ---------- */
 @media (max-width: 768px) {
+  /* Layout */
   .carousel-container {
-    height: 100vh;
-    flex-direction: column;
+    height: auto !important;
+    min-height: 100dvh;
+    padding: 72px 0 28px; /* room for Back */
+    display: grid;
+    place-items: center;
+    overflow: hidden;
   }
 
   .carousel-wrapper {
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: auto !important;
+    display: grid;
+    place-items: center;
+    position: relative;
   }
 
+  /* Core: make every slide a centered square; reset desktop sizes */
+ /* --- Fine-tuned centering for mobile --- */
+@media (max-width: 768px) {
   .carousel-item {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    transform: none !important;
-    opacity: 0;
-    transition: opacity 0.4s ease-in-out;
-    border-radius: 0;
-    box-shadow: none;
+    left: 50% !important;
+    top: 48% !important;               /* ⬅ slightly higher than 50% to center better */
+    width: 92vw !important;
+    max-width: 560px !important;
+    aspect-ratio: 1 / 1 !important;
+    height: auto !important;
+    border-radius: 14px !important;
+    box-shadow: 0 10px 26px rgba(0,0,0,.55) !important;
+    transform: translate(-50%, -50%) !important;
+    opacity: 0 !important;
+    z-index: 1 !important;
+    pointer-events: none;
   }
 
   .carousel-item.active {
-    opacity: 1;
-    z-index: 3;
+    opacity: 1 !important;
+    z-index: 3 !important;
+    transform: translate(-50%, -50%) !important;
   }
+}
 
+
+  /* Hide side/hidden states explicitly */
   .carousel-item.left,
-  .carousel-item.right {
-    opacity: 0;
-    z-index: 1;
+  .carousel-item.right,
+  .carousel-item.hidden {
+    opacity: 0 !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
   }
 
+  /* Media: show whole image/video (no crop) */
+  .carousel-item img,
+  .carousel-item video.carousel-video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;   /* letterbox instead of crop */
+    background: #000;
+    display: block;
+  }
+
+  /* Arrows relative to square */
   .nav-button {
     font-size: 1.8rem;
     padding: 10px;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0,0,0,.45);
   }
-
-  .nav-button.left {
-    left: 10px;
-  }
-
-  .nav-button.right {
-    right: 10px;
-  }
+  .nav-button.left  { left: 10px !important; }
+  .nav-button.right { right: 10px !important; }
 
   .back-button {
     top: 10px;
     left: 10px;
     padding: 8px 12px;
-    font-size: 0.9rem;
+    font-size: .9rem;
   }
 }
 
-/* Very small phones */
+/* ---------- Tiny phones (≤480px) ---------- */
 @media (max-width: 480px) {
-  .nav-button {
-    font-size: 1.5rem;
-    padding: 8px;
+  .nav-button { font-size: 1.5rem; padding: 8px; }
+  .back-button { font-size: .8rem; padding: 6px 10px; }
+}
+/* ===== PATCH: mobile centering & sizing (drop-in) ===== */
+@media (max-width: 768px) {
+  /* use the space below the Back button, then center */
+  .carousel-container {
+    position: relative;
+    padding-top: 56px;                         /* room for Back */
+    height: calc(100dvh - 56px);              /* remaining viewport */
+    display: flex;
+    align-items: center;                       /* horizontal center */
+    justify-content: center;                   /* vertical center */
+    overflow: hidden;
   }
 
-  .back-button {
-    font-size: 0.8rem;
-    padding: 6px 10px;
+  .carousel-container .carousel-wrapper {
+    position: relative !important;
+    width: 92vw !important;
+    max-width: 560px !important;
+    aspect-ratio: 1 / 1 !important;           /* square stage */
   }
-}
-/* --- Video support --- */
-.carousel-item video.carousel-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  outline: none;
-  background: #000;
-}
 
-/* Don’t show controls for non-active items on desktop */
-.carousel-item.left video,
-.carousel-item.right video,
-.carousel-item.hidden video {
-  pointer-events: none;
-}
+  /* make the slide itself sit dead center in that square */
+  .carousel-container .carousel-item {
+    position: absolute !important;
+    left: 50% !important;
+    top: 20% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
 
-/* Mobile: full-screen slides are already opacity-faded;
-   controls only on the active one thanks to the "controls" prop in JSX */
+  .carousel-container .carousel-item.active {
+    opacity: 1 !important;
+    z-index: 3 !important;
+    pointer-events: auto !important;
+  }
+
+  /* show full media (no crop) */
+  .carousel-container .carousel-item img,
+  .carousel-container .carousel-item video.carousel-video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    background: #000;
+  }
+
+  /* keep arrows centered against the square */
+  .carousel-container .nav-button {
+    position: absolute;
+    top: 40% !important;
+    transform: translateY(-50%) !important;
+    z-index: 5;
+  }
+  .carousel-container .nav-button.left  { left: 10px !important; }
+  .carousel-container .nav-button.right { right: 10px !important; }
+}

@@ -6,9 +6,42 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { isLoggedIn, getLoggedInUser } from "../../api/loginApi";
-import { bookEvent } from "../../api/auth";
+import {
+  bookEvent,
+  fetchBookedUsers,
+  buildBookingIndex,
+  hasBooked as _hasBooked, // we'll wrap to normalize
+} from "../../api/auth";
 import { fetchEvents } from "../../api/fetchEvents";
 import Banner from "./Banner";
+
+/** Toggle this to true to see helpful console logs */
+const DEBUG = false;
+
+/** Date → YYYY-MM-DD in LOCAL time (no UTC shift) */
+function toLocalYMD(d) {
+  if (!(d instanceof Date) || isNaN(d)) return "";
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** Wrap hasBooked to force same normalization for comparisons */
+function hasBooked(index, { email, event, date }) {
+  const norm = {
+    email: String(email || "")
+      .toLowerCase()
+      .trim(),
+    event: String(event || "")
+      .toLowerCase()
+      .trim(), // IMPORTANT: lowercase event
+    date: String(date || "").trim(),
+  };
+  // We can only rely on underlying _hasBooked if index was built with same normalization.
+  // We'll ensure that when we optimistically add below, and by normalizing in fetchBookedUsers (auth.js).
+  return _hasBooked(index, norm);
+}
 
 const AboutUsWithCalendar = () => {
   const today = new Date();
@@ -16,11 +49,9 @@ const AboutUsWithCalendar = () => {
   const [currentDate, setCurrentDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1)
   );
-  const [events, setEvents] = useState({}); // map: "YYYY-M-D" -> [events]
-  const [selectedEventDay, setSelectedEventDay] = useState(null); // { date, events }
+  const [events, setEvents] = useState({});
+  const [selectedEventDay, setSelectedEventDay] = useState(null);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
-
-  // NEW: event picker modal state
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const [bookingDetails, setBookingDetails] = useState({
@@ -28,8 +59,32 @@ const AboutUsWithCalendar = () => {
     events: "",
     date: "",
   });
-  console.log(bookingDetails);
-  // Fetch calendar events and set initial month around first event
+console.log(bookingDetails);
+  /** === Load booked-users once and build index === */
+  const [bookingIndex, setBookingIndex] = useState(null);
+  const [bookingIdxLoading, setBookingIdxLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const rows = await fetchBookedUsers();
+        if (DEBUG) console.log("[booked-users rows]", rows);
+        if (!alive) return;
+        // NOTE: Ensure your fetchBookedUsers in auth.js lowercases event there, or we’ll normalize when checking.
+        setBookingIndex(buildBookingIndex(rows));
+      } catch (e) {
+        console.error("Failed to load booked users:", e);
+      } finally {
+        if (alive) setBookingIdxLoading(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  /** === Load event calendar === */
   useEffect(() => {
     (async () => {
       const map = await fetchEvents();
@@ -49,42 +104,30 @@ const AboutUsWithCalendar = () => {
     })();
   }, []);
 
-  // History back button closes any open modal in LIFO order
+  /** === Modal controls (Esc/back) === */
   useEffect(() => {
     const anyModalOpen = pickerOpen || selectedEventDay || confirmationOpen;
     if (anyModalOpen) {
       window.history.pushState({ modalOpen: true }, "");
-      document.body.style.overflow = "hidden"; // lock scroll while any modal open
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = ""; // release
+      document.body.style.overflow = "";
     }
 
     const handlePopState = () => {
-      if (confirmationOpen) {
-        setConfirmationOpen(false);
-        return;
-      }
-      if (selectedEventDay) {
-        setSelectedEventDay(null);
-        return;
-      }
-      if (pickerOpen) {
-        setPickerOpen(false);
-        return;
-      }
+      if (confirmationOpen) return setConfirmationOpen(false);
+      if (selectedEventDay) return setSelectedEventDay(null);
+      if (pickerOpen) return setPickerOpen(false);
     };
 
     window.addEventListener("popstate", handlePopState);
     return () => {
       window.removeEventListener("popstate", handlePopState);
-      // ensure unlock on unmount
-      if (!pickerOpen && !selectedEventDay && !confirmationOpen) {
+      if (!pickerOpen && !selectedEventDay && !confirmationOpen)
         document.body.style.overflow = "";
-      }
     };
   }, [pickerOpen, selectedEventDay, confirmationOpen]);
 
-  // Esc to close topmost modal
   useEffect(() => {
     const onKey = (e) => {
       if (e.key !== "Escape") return;
@@ -96,7 +139,7 @@ const AboutUsWithCalendar = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, [pickerOpen, selectedEventDay, confirmationOpen]);
 
-  // Helpers for calendar
+  /** === Calendar helpers === */
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const monthName = currentDate.toLocaleString("default", { month: "long" });
@@ -111,14 +154,11 @@ const AboutUsWithCalendar = () => {
       date.getMonth() + 1
     }-${date.getDate()}`;
     const dayEvents = events[key] || [];
-    if (dayEvents.length > 0) {
-      setSelectedEventDay({ date, events: dayEvents });
-    }
+    if (dayEvents.length > 0) setSelectedEventDay({ date, events: dayEvents });
     document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // ---- ACTIVE EVENTS PICKER LOGIC ----
-  // Convert your events map into an array of event rows with date/time
+  /** === Build active event list for picker === */
   const flattenEvents = (map) => {
     if (!map) return [];
     const rows = [];
@@ -126,21 +166,15 @@ const AboutUsWithCalendar = () => {
       const [y, m, d] = key.split("-").map(Number);
       const dateObj = new Date(y, m - 1, d);
       (list || []).forEach((ev) => {
-        let evDate =
+        const evDate =
           ev?.dateObj instanceof Date && !isNaN(ev.dateObj)
             ? ev.dateObj
             : ev?.isoDate
             ? new Date(ev.isoDate)
-            : dateObj; // fallback to map key date
-        rows.push({
-          keyDate: dateObj, // normalized day date
-          evDate, // specific time if available
-          dayKey: key,
-          ...ev,
-        });
+            : dateObj;
+        rows.push({ keyDate: dateObj, evDate, dayKey: key, ...ev });
       });
     });
-    // Sort by event date/time
     rows.sort(
       (a, b) =>
         (a.evDate?.getTime?.() ?? a.keyDate) -
@@ -149,23 +183,20 @@ const AboutUsWithCalendar = () => {
     return rows;
   };
 
-  // Decide if an event is "active" — keep simple: today or future, or ev.active===true
   const isActiveEvent = (row) => {
     const now = new Date();
-    // if the payload has a boolean 'active', prefer that
     if (typeof row.active === "boolean") return row.active;
     const cmp =
       row.evDate instanceof Date && !isNaN(row.evDate)
         ? row.evDate
         : row.keyDate;
-    // same-day is allowed
     return cmp.setHours(0, 0, 0, 0) >= now.setHours(0, 0, 0, 0);
   };
 
   const allRows = flattenEvents(events);
   const activeRows = allRows.filter(isActiveEvent);
 
-  // “Register For Event” → open picker instead of picking first event
+  /** === Top CTA: Register For Event (opens picker) === */
   const handleTopBookClick = () => {
     if (!isLoggedIn()) {
       alert("You need to login first!");
@@ -180,9 +211,8 @@ const AboutUsWithCalendar = () => {
     document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // When user picks an event in the picker
+  /** Picker → choose an event row to open per-day modal */
   const handleChooseEvent = (row) => {
-    // open your existing day modal preloaded with that event's day + list
     const dayEvents = events[row.dayKey] || [];
     const [y, m, d] = row.dayKey.split("-").map(Number);
     setSelectedEventDay({ date: new Date(y, m - 1, d), events: dayEvents });
@@ -191,7 +221,6 @@ const AboutUsWithCalendar = () => {
 
   return (
     <div id="about">
-      {/* About Us */}
       <div className="banner">
         <Banner data={events} />
       </div>
@@ -204,12 +233,13 @@ const AboutUsWithCalendar = () => {
             At Off-Road Adda, adventure goes beyond the trail — it's about the
             people, the stories, and the shared moments that bring us together.
           </p>
+          {/* FIXED: onClick (was oonClick) */}
           <button className="book-now-button" onClick={handleTopBookClick}>
             Register For Event
           </button>
         </div>
 
-        {/* Calendar */}
+        {/* === Calendar === */}
         <div className="calendar-container">
           <div className="calendar-header">
             <IconCircleChevronLeftFilled onClick={prevMonth} />
@@ -266,14 +296,13 @@ const AboutUsWithCalendar = () => {
           </div>
         </div>
 
-        {/* ===================== Event Picker Modal (NEW) ===================== */}
+        {/* === Event Picker Modal === */}
         {pickerOpen && (
           <div
             className="modal-overlay"
             onClick={() => setPickerOpen(false)}
             role="dialog"
             aria-modal="true"
-            aria-label="Select an event"
           >
             <div
               className="modal-content event-picker"
@@ -358,7 +387,7 @@ const AboutUsWithCalendar = () => {
           </div>
         )}
 
-        {/* ===================== Per-day Event Modal (existing) ===================== */}
+        {/* === Per-day Event Modal === */}
         {selectedEventDay && (
           <div
             className="modal-overlay"
@@ -400,32 +429,82 @@ const AboutUsWithCalendar = () => {
                       })
                     : ev.isoDate ?? "Time unavailable";
 
+                // Current user
+                const user = getLoggedInUser?.();
+                const userEmail = user?.email || "";
+
+                // Normalize event + date for comparisons
+                const eventName = String(ev.title || "").trim();
+                const eventNameKey = eventName.toLowerCase(); // IMPORTANT
+                const eventDateStr =
+                  evDate instanceof Date && !isNaN(evDate)
+                    ? toLocalYMD(evDate)
+                    : toLocalYMD(selectedEventDay.date);
+
+                const alreadyBooked =
+                  !!userEmail &&
+                  !bookingIdxLoading &&
+                  hasBooked(bookingIndex, {
+                    email: userEmail,
+                    event: eventNameKey, // lowercase
+                    date: eventDateStr,
+                  });
+
+                if (DEBUG) {
+                  const key = `${String(userEmail)
+                    .toLowerCase()
+                    .trim()}|${eventNameKey}|${eventDateStr}`;
+                  console.log("[check]", {
+                    key,
+                    has: bookingIndex?.has?.(key),
+                    sample: Array.from(bookingIndex || []).slice(0, 5),
+                  });
+                }
+
                 const handleRegisterClick = async () => {
                   if (!isLoggedIn()) {
                     alert("You need to login first!");
                     setSelectedEventDay(null);
-                    document
-                      .getElementById("home")
-                      ?.scrollIntoView({ behavior: "smooth" });
+                    document.getElementById("home")?.scrollIntoView({
+                      behavior: "smooth",
+                    });
                     return;
                   }
 
                   const user = getLoggedInUser();
                   if (!user) return;
-                 
+
+                  // Duplicate check before booking
+                  if (
+                    !bookingIdxLoading &&
+                    hasBooked(bookingIndex, {
+                      email: user.email,
+                      event: eventNameKey, // lowercase
+                      date: eventDateStr,
+                    })
+                  ) {
+                    alert("You have already registered for this event date.");
+                    return;
+                  }
+
                   const bookingPayload = {
                     Email: user.email,
-                    EventDetails: ev.title,
-                    date:
-                      evDate instanceof Date
-                        ? evDate.toISOString().split("T")[0]
-                        : null,
+                    EventDetails: eventName, // keep original case for backend
+                    date: eventDateStr,
                   };
 
-                  setBookingDetails(bookingPayload); // fix: actually set the payload
+                  setBookingDetails(bookingPayload);
 
                   try {
                     await bookEvent(bookingPayload);
+                    // Optimistically add to index so UI disables immediately.
+                    setBookingIndex((prev) => {
+                      const next = new Set(prev || []);
+                      next.add(
+                        `${bookingPayload.Email.toLowerCase().trim()}|${eventNameKey}|${bookingPayload.date.trim()}`
+                      );
+                      return next;
+                    });
                     setConfirmationOpen(true);
                   } catch (err) {
                     alert(
@@ -444,8 +523,21 @@ const AboutUsWithCalendar = () => {
                         className="book-now-button"
                         type="button"
                         onClick={handleRegisterClick}
+                        disabled={bookingIdxLoading || alreadyBooked}
+                        title={
+                          alreadyBooked
+                            ? "You already booked this event date."
+                            : "Register"
+                        }
+                        style={{
+                          opacity: bookingIdxLoading || alreadyBooked ? 0.6 : 1,
+                          cursor:
+                            bookingIdxLoading || alreadyBooked
+                              ? "not-allowed"
+                              : "pointer",
+                        }}
                       >
-                        Register
+                        {alreadyBooked ? "Already Booked" : "Register"}
                       </button>
                     </div>
                   </div>

@@ -112,70 +112,80 @@
 /* responsive */
 /* ===== Mobile (keep horizontal row, remove side gaps) ===== */
 /* ===== Mobile (fit width + keep arrows) ===== */
+/* ===== Mobile (<=720px): 1 full card visible between arrows) ===== */
 @media (max-width: 720px) {
+  :root {
+    /* tweak these if you change arrow size/margins later */
+    --arrow: 36px;      /* .row-arrow width/height */
+    --gutter: 8px;      /* little breathing room on each side of arrows */
+    --gap: 12px;        /* gap between cards */
+  }
+
   .album-row {
     display: grid;
-    grid-template-columns: auto 1fr auto;   /* arrows - carousel - arrows */
+    grid-template-columns: auto 1fr auto;   /* left arrow | scroller | right arrow */
     align-items: center;
     gap: 6px;
     width: 100vw;
-    overflow: hidden;                       /* 🚫 no scroll bleed */
+    overflow: hidden;                       /* stop body scroll-bleed */
     box-sizing: border-box;
+    padding: 0 0;
   }
 
   .album-scroller {
     display: flex;
     overflow-x: auto;
-    scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    gap: 12px;
+    gap: var(--gap);
     margin: 0 auto;
     padding: 0 0 12px 0;
     width: 100%;
     box-sizing: border-box;
+
+    /* ensure centered card snaps fully into view, not half cropped */
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: calc(var(--arrow) + var(--gutter));
   }
 
   .album-preview-card {
-    flex: 0 0 85vw;                         /* fills most of screen */
-    height: min(60vh, 420px);
+    /* Fit exactly between the two arrows + gutters */
+    flex: 0 0 calc(100vw - (2 * var(--arrow)) - (2 * var(--gutter)) - 8px);
+    /* a touch shorter so it never looks “too tall” on small phones */
+    height: min(53vh, 380px);
     border-radius: 12px;
     margin: 0;
     scroll-snap-align: center;
+    scroll-snap-stop: always;
   }
 
-  /* ✅ keep arrows visible but adjust size/placement */
+  /* Keep images cleanly framed */
+  .album-preview-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* arrows: same size as variable above */
   .row-arrow {
-    width: 36px;
-    height: 36px;
+    width: var(--arrow);
+    height: var(--arrow);
     font-size: 20px;
     background: rgba(0, 0, 0, 0.6);
     color: #f5f2ef;
     border: none;
     border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    place-items: center;
     cursor: pointer;
     transition: transform 0.2s ease, background 0.3s ease;
   }
+  .row-arrow:hover { background: rgba(246,139,0,0.85); transform: scale(1.1); }
 
-  .row-arrow:hover {
-    background: rgba(246, 139, 0, 0.85);
-    transform: scale(1.1);
-  }
+  /* nudge arrows a hair inward so nothing touches screen edges */
+  .album-row > .row-arrow:first-child { margin-left: 4px; }
+  .album-row > .row-arrow:last-child  { margin-right: 4px; }
 
-  /* optional: tighter arrows positioning */
-  .album-row > .row-arrow:first-child {
-    margin-left: 4px;
-  }
-  .album-row > .row-arrow:last-child {
-    margin-right: 4px;
-  }
-
-  /* prevent body-level horizontal scroll */
-  body, html {
-    overflow-x: hidden !important;
-  }
+  /* prevent accidental horizontal scrolling at page level */
+  html, body { overflow-x: hidden !important; }
 }
-
-
