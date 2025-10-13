@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import "./App.css";
 
-import bgImage from "./assets/jeep.jpeg";
-// import bgVideo from "./assets/bgvideo.mp4";
+// import bgImage from "./assets/jeep.jpeg";
+import bgVideo from "./assets/BannerVideo.mp4";
 
 import Navbar from "./components/navbar/Navbar"; // your existing navbar
 import HomeHero from "./components/home/HomeHero"; // NEW: hero-only (no login)
@@ -36,14 +36,14 @@ export default function App() {
       <section
         id="home"
         className="home-section"
-        style={{ backgroundImage: `url(${bgImage})`}}
+        // style={{ backgroundImage: `url(${bgImage})`}}
       >
         {/* background video (behind everything) */}
-        {/* <div className="video-background" aria-hidden="true">
+        <div className="video-background" aria-hidden="true">
           <video autoPlay muted loop playsInline className="bg-video">
             <source src={bgVideo} type="video/mp4" />
           </video>
-        </div> */}
+        </div>
 
         {/* hero copy (no login) */}
         <HomeHero />
