@@ -1,32 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { fetchTestimonials } from "../../api/testimonial"
 import Testimony1 from "../../assets/2151476195.jpg";
-import Testimony2 from "../../assets/2151476211.jpg"; // add more
+import Testimony2 from "../../assets/2151476211.jpg";
 import Testimony3 from "../../assets/2149447464.jpg";
 import "./index.css";
 
-const testimonials = [
-  {
-    img: Testimony1,
-    text: "Off-Road Adda introduced me to adventures I never imagined experiencing.",
-    name: "Emma L.",
-    role: "Adventure Enthusiast",
-  },
-  {
-    img: Testimony2,
-    text: "The best community for off-road lovers. Every trip feels like family.",
-    name: "Raj P.",
-    role: "4x4 Owner",
-  },
-  {
-    img: Testimony3,
-    text: "I gained skills, friends, and memories that will last a lifetime.",
-    name: "Sarah W.",
-    role: "Explorer",
-  },
-];
+const fallbackImages = [Testimony1, Testimony2, Testimony3];
 
 function Testimonials() {
+  const [testimonials, setTestimonials] = useState([]);
   const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      const data = await fetchTestimonials();
+      setTestimonials(data);
+    })();
+  }, []);
 
   const nextSlide = () => {
     setCurrent((prev) => (prev + 1) % testimonials.length);
@@ -36,19 +26,27 @@ function Testimonials() {
     setCurrent((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
   };
 
-  const { img, text, name, role } = testimonials[current];
+  if (testimonials.length === 0) {
+    return (
+      <section className="t-wrapper" id="testimonials">
+        <h1 className="t-title">TESTIMONIALS</h1>
+        <p className="t-loading">Loading testimonials...</p>
+      </section>
+    );
+  }
+
+  const { text, name, role, image } = testimonials[current];
+  const img = image || fallbackImages[current % fallbackImages.length];
 
   return (
     <section className="t-wrapper" id="testimonials">
       <h1 className="t-title">TESTIMONIALS</h1>
 
       <div className="t-row">
-        {/* Left: framed photo */}
         <div className="t-photoFrame">
           <img src={img} alt={name} className="t-photo" />
         </div>
 
-        {/* Right: quote */}
         <div className="t-quote">
           <p className="t-quoteText">
             <span className="t-qMark t-qOpen">“</span>
@@ -64,7 +62,6 @@ function Testimonials() {
           </p>
         </div>
 
-        {/* Carousel controls - outside quote */}
         <button onClick={prevSlide} className="t-btn t-btnPrev">
           ‹
         </button>

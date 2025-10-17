@@ -1,71 +1,83 @@
 /* ------------------------------------------------------------------
-   HOME HERO — left-balanced layout
+   HOME HERO — left-aligned & vertically centered
    ------------------------------------------------------------------ */
-:root{
+:root {
   --hero-amber: #f68b00;
   --hero-ink: #f5f2ef;
 }
 
-html, body { margin:0; padding:0; overflow-x: hidden; }
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 
-/* NEVER add top space for the fixed nav (overlay) */
+/* ------------------------------------------------------------------
+   SECTION BASE
+   ------------------------------------------------------------------ */
 .home-section {
- 
-
   position: relative;
   margin-top: -68px; /* same as navbar height */
   z-index: 0;
 }
 
-
 .nav-wrap {
   position: fixed;
-  
   top: 0;
   left: 0;
   width: 100%;
   z-index: 100;
 }
 
-
-.home-section{
+.home-section {
   position: relative;
   min-height: 100dvh;
-  
   display: grid;
   place-items: stretch;
   color: var(--hero-ink);
   overflow: clip;
 }
 
-/* main hero */
-.home-hero{
+/* ------------------------------------------------------------------
+   MAIN HERO
+   ------------------------------------------------------------------ */
+.home-hero {
   position: relative;
   z-index: 1;
-  display: grid;
-  place-items: center;
-  min-height: 100dvh; /* nav overlays; we don’t reserve height */
+  display: flex;
+  align-items: center; /* vertically centered */
+  justify-content: flex-start; /* fully left */
+  min-height: 100dvh;
+  width: 100%;
 }
 
-.home-hero__inner{
-  width: min(1200px, 94vw);
-  margin-inline: auto;
+/* ------------------------------------------------------------------
+   INNER CONTAINER
+   ------------------------------------------------------------------ */
+.home-hero__inner {
+  width: 100%;
   position: relative;
 }
 
-/* copy block (further left) */
+/* ------------------------------------------------------------------
+   HERO TEXT — locked to full left
+   ------------------------------------------------------------------ */
 .home-hero__copy {
-  position: relative;
-  margin-top: clamp(30vh, 24vh, 20vh);
-  margin-left: clamp(1vw, 1vw, 120px); /* More left alignment */
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
   text-shadow: 0 3px 18px rgba(0,0,0,.55);
   text-align: left;
   transition: all 0.3s ease;
+  padding-left: 4vw; /* distance from extreme left edge */
+  z-index: 2;
 }
 
-
-/* OFF-ROAD */
-.home-hero__title{
+/* ------------------------------------------------------------------
+   HERO TEXT STYLES (UNCHANGED)
+   ------------------------------------------------------------------ */
+.home-hero__title {
   margin: 0;
   font-family: "SGlitch", system-ui, sans-serif;
   font-weight: 200;
@@ -76,8 +88,7 @@ html, body { margin:0; padding:0; overflow-x: hidden; }
   color: var(--hero-amber);
 }
 
-/* Adventure — smaller & balanced */
-.home-hero__script{
+.home-hero__script {
   margin: 0.15em 0 0;
   font-family: "Kollegan", cursive;
   font-weight: 50;
@@ -85,55 +96,55 @@ html, body { margin:0; padding:0; overflow-x: hidden; }
   line-height: .9;
   color: #fff;
   position: relative;
-  left: clamp(3vw, 10vw, 12vw); /* starts near middle of OFF-ROAD */
+  left: clamp(3vw, 8vw, 10vw); /* aligns under OFF-ROAD */
 }
 
-/* Tagline — compact, aligned */
-.home-hero__tag{
+.home-hero__tag {
   margin-top: clamp(10px, 1vw, 14px);
   width: fit-content;
   padding: 10px 16px;
-  /* border-radius: 5px; */
   background: rgba(0,0,0,.32);
   border: 3px solid rgba(255,255,255,.18);
-  /* backdrop-filter: blur(1px); */
-  /* -webkit-backdrop-filter: blur(5px); */
   box-shadow: 0 6px 16px rgba(0,0,0,.35);
 }
-.home-hero__tag span{
-  display:block;
+
+.home-hero__tag span {
+  display: block;
   font-size: clamp(2vw, 2vw, 18px);
   line-height: 1;
   font-weight: 500;
   letter-spacing: .4px;
 }
 
-/* --------------------- Responsive --------------------- */
+/* ------------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------------ */
 @media (max-width: 900px) {
-  .home-hero__copy {
-    margin-top: clamp(28px, 10vh, 14vh);
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .home-hero {
     justify-content: center;
+    align-items: center;
   }
-.home-hero__title{
-  margin: 0;
-  font-family: "SGlitch", system-ui, sans-serif;
-  font-weight: 200;
-  font-size: clamp(11vw, 18vw, 140px);
-  line-height: .9;
-  letter-spacing: .04em;
-  color: var(--hero-amber);
-}
+
+  .home-hero__copy {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    padding-left: 0;
+    margin-top: clamp(28px, 10vh, 14vh);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .home-hero__title {
+    font-size: clamp(11vw, 18vw, 140px);
+  }
+
   .home-hero__script {
     left: 0;
     margin-left: 0;
-     font-weight: 100;
-  font-size: clamp(6vw, 8vw, 140px);
+    font-weight: 100;
+    font-size: clamp(6vw, 8vw, 140px);
   }
 
   .home-hero__tag {
@@ -143,5 +154,14 @@ html, body { margin:0; padding:0; overflow-x: hidden; }
 
   .home-hero__tag span {
     font-size: clamp(12px, 3.8vw, 16px);
+  }
+}
+
+/* ------------------------------------------------------------------
+   EXTRA WIDE SCREENS
+   ------------------------------------------------------------------ */
+@media (min-width: 1400px) {
+  .home-hero__copy {
+    padding-left: 100px;
   }
 }
