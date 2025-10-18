@@ -133,7 +133,9 @@ html, body {
     padding-left: 0;
     margin-top: clamp(28px, 10vh, 14vh);
     margin-inline: auto;
-    text-align: center;
+    text-align: center;              /* center all text */
+    padding-inline: 16px;            /* safe side padding */
+    max-width: 92vw;                 /* keep lines tidy */
   }
 
   .home-hero__title {
@@ -141,14 +143,17 @@ html, body {
   }
 
   .home-hero__script {
+    /* remove manual offsets */
     left: 0;
-    margin-left: 0;
+    margin: .15em 0 0;               /* no margin-left */
+    transform: none;                  /* no X nudge */
     font-weight: 100;
     font-size: clamp(6vw, 8vw, 140px);
   }
 
+  /* ✅ Center tagline box perfectly */
   .home-hero__tag {
-    margin-top: 12px;
+    margin: 12px auto 0;              /* auto on both sides centers width:fit-content */
     padding: 8px 14px;
   }
 
@@ -164,4 +169,9 @@ html, body {
   .home-hero__copy {
     padding-left: 100px;
   }
+}
+
+@media (max-width: 1024px){
+  .navbar{ display: none; }   /* hide desktop link row */
+  .nav-burger{ display: block; }
 }

@@ -99,12 +99,46 @@
   height: 100%;
   object-fit: cover;
 }
-.app-sticky-nav {
-  position: sticky;
-  top: 0;
-
-  z-index: 1000;      /* keeps it above sections */
+/* Controls how far below the very top the navbar sits */
+:root{
+  --nav-h: 68px;             /* your nav height (for reference) */
+  --nav-offset-desktop: 26px; /* how much you want it pushed down */
+  --nav-offset-mobile: 0px;   /* usually 0 on phones */
 }
+
+/* Fixed navbar – now offset from the top */
+.app-sticky-nav{
+  position: fixed;
+  top: calc(var(--nav-offset-desktop) + env(safe-area-inset-top, 0px));
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  /* optional cosmetics */
+  /* backdrop-filter: saturate(120%) blur(2px); */
+}
+
+/* Optional: a thin amber strip ABOVE the navbar (purely decorative) */
+/* .app-sticky-nav::before{
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(-1 * var(--nav-offset-desktop));  
+  height: var(--nav-offset-desktop);
+  background: linear-gradient(90deg, transparent 0 5%, #f68b00 5% 95%, transparent 95% 100%);
+  pointer-events: none;
+} */
+
+/* Mobile: usually keep it flush to the top */
+@media (max-width: 768px){
+  .app-sticky-nav{
+    top: calc(var(--nav-offset-mobile) + env(safe-area-inset-top, 0px));
+  }
+  .app-sticky-nav::before{
+    height: var(--nav-offset-mobile);
+    top: calc(-1 * var(--nav-offset-mobile));
+  }
+}
+
 .video-background {
   position: absolute;
   inset: 0;
