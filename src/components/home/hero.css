@@ -115,6 +115,34 @@ html, body {
   font-weight: 500;
   letter-spacing: .4px;
 }
+/* === HERO should truly fill the viewport on desktop === */
+.home-section{
+  position: relative !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+
+  min-height: 100svh !important;
+  height: 100svh !important;   /* override the earlier height:auto */
+  max-height: none !important; /* avoid accidental caps */
+}
+
+/* Background layers must cover the section */
+.hero-bg, .bg-video, .bg-image{
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* If your header is fixed on phones, give content a top cushion only there */
+@media (max-width: 900px){
+  .home-section{
+    min-height: 100svh !important;
+    height: auto !important;                 /* let it grow on small screens */
+    padding-top: 64px !important;            /* = fixed header height */
+  }
+}
 
 /* ------------------------------------------------------------------
    RESPONSIVE
