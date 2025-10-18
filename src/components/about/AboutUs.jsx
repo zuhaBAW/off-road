@@ -1,3 +1,4 @@
+// src/components/About/BannerCalendar.jsx
 import React, { useState, useEffect } from "react";
 import "./about.css";
 import {
@@ -15,17 +16,33 @@ import {
 import { fetchEvents } from "../../api/fetchEvents";
 import Banner from "./Banner";
 
-/** Toggle this to true to see helpful console logs */
+// ---- Timezone helpers (match fetchEvents) ----
+const TZ = "Asia/Dubai";
+function ymdInTZ(date, tz = TZ) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+
+  const y = parts.find((p) => p.type === "year").value;
+  const m = parts.find((p) => p.type === "month").value;
+  const d = parts.find((p) => p.type === "day").value;
+  return `${y}-${String(Number(m))}-${String(Number(d))}`;
+}
+
+// Toggle this to true to see helpful console logs
 const DEBUG = false;
 
-/** Date → YYYY-MM-DD in LOCAL time (no UTC shift) */
-function toLocalYMD(d) {
-  if (!(d instanceof Date) || isNaN(d)) return "";
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
+/** Date → YYYY-MM-DD in LOCAL time (kept for internal consistency if needed) */
+// function toLocalYMD(d) {
+//   if (!(d instanceof Date) || isNaN(d)) return "";
+//   const y = d.getFullYear();
+//   const m = String(d.getMonth() + 1).padStart(2, "0");
+//   const day = String(d.getDate()).padStart(2, "0");
+//   return `${y}-${m}-${day}`;
+// }
 
 /** Wrap hasBooked to force same normalization for comparisons */
 function hasBooked(index, { email, event, date }) {
@@ -38,8 +55,6 @@ function hasBooked(index, { email, event, date }) {
       .trim(), // IMPORTANT: lowercase event
     date: String(date || "").trim(),
   };
-  // We can only rely on underlying _hasBooked if index was built with same normalization.
-  // We'll ensure that when we optimistically add below, and by normalizing in fetchBookedUsers (auth.js).
   return _hasBooked(index, norm);
 }
 
@@ -59,7 +74,7 @@ const AboutUsWithCalendar = () => {
     events: "",
     date: "",
   });
-console.log(bookingDetails);
+
   /** === Load booked-users once and build index === */
   const [bookingIndex, setBookingIndex] = useState(null);
   const [bookingIdxLoading, setBookingIdxLoading] = useState(true);
@@ -70,8 +85,8 @@ console.log(bookingDetails);
       try {
         const rows = await fetchBookedUsers();
         if (DEBUG) console.log("[booked-users rows]", rows);
+        console.log(bookingDetails)
         if (!alive) return;
-        // NOTE: Ensure your fetchBookedUsers in auth.js lowercases event there, or we’ll normalize when checking.
         setBookingIndex(buildBookingIndex(rows));
       } catch (e) {
         console.error("Failed to load booked users:", e);
@@ -150,9 +165,8 @@ console.log(bookingDetails);
   const weekdays = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
   const openDay = (date) => {
-    const key = `${date.getFullYear()}-${
-      date.getMonth() + 1
-    }-${date.getDate()}`;
+    // Build key using Dubai day to align with fetchEvents grouping
+    const key = ymdInTZ(date, TZ);
     const dayEvents = events[key] || [];
     if (dayEvents.length > 0) setSelectedEventDay({ date, events: dayEvents });
     document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
@@ -185,12 +199,10 @@ console.log(bookingDetails);
 
   const isActiveEvent = (row) => {
     const now = new Date();
-    if (typeof row.active === "boolean") return row.active;
-    const cmp =
-      row.evDate instanceof Date && !isNaN(row.evDate)
-        ? row.evDate
-        : row.keyDate;
-    return cmp.setHours(0, 0, 0, 0) >= now.setHours(0, 0, 0, 0);
+    // Compare by Dubai's midnight to avoid UTC drift
+    const dubaiDay = ymdInTZ(row.evDate || row.keyDate, TZ);
+    const todayDubai = ymdInTZ(now, TZ);
+    return dubaiDay >= todayDubai;
   };
 
   const allRows = flattenEvents(events);
@@ -233,7 +245,6 @@ console.log(bookingDetails);
             At Off-Road Adda, adventure goes beyond the trail — it's about the
             people, the stories, and the shared moments that bring us together.
           </p>
-          {/* FIXED: onClick (was oonClick) */}
           <button className="book-now-button" onClick={handleTopBookClick}>
             Register For Event
           </button>
@@ -267,23 +278,23 @@ console.log(bookingDetails);
 
             {Array.from({ length: daysInMonth }, (_, i) => {
               const day = i + 1;
-              const date = new Date(year, month, day);
-              const key = `${year}-${month + 1}-${day}`;
+              const cellDate = new Date(year, month, day);
+              const key = ymdInTZ(cellDate, TZ); // align with events grouping
               const dayEvents = events[key] || [];
               const hasEvent = dayEvents.length > 0;
-              const isToday =
-                day === today.getDate() &&
-                month === today.getMonth() &&
-                year === today.getFullYear();
-              const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+
+              const isTodayDubai = ymdInTZ(cellDate, TZ) === ymdInTZ(today, TZ);
+
+              const dow = cellDate.getDay();
+              const isWeekend = dow === 0 || dow === 6;
 
               return (
                 <div
                   key={day}
-                  className={`calendar-day ${isToday ? "today" : ""} ${
+                  className={`calendar-day ${isTodayDubai ? "today" : ""} ${
                     hasEvent ? "event-day" : ""
                   } ${isWeekend ? "weekend" : ""}`}
-                  onClick={() => openDay(date)}
+                  onClick={() => openDay(cellDate)}
                   title={
                     hasEvent ? dayEvents.map((e) => e.title).join(", ") : ""
                   }
@@ -323,21 +334,22 @@ console.log(bookingDetails);
                   {activeRows.map((row) => {
                     const when =
                       row.evDate instanceof Date && !isNaN(row.evDate)
-                        ? `${row.evDate.toLocaleDateString(undefined, {
+                        ? new Intl.DateTimeFormat(undefined, {
+                            timeZone: TZ,
                             weekday: "short",
                             month: "short",
                             day: "numeric",
                             year: "numeric",
-                          })} • ${row.evDate.toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
-                          })}`
-                        : new Date(row.keyDate).toLocaleDateString(undefined, {
+                          }).format(row.evDate)
+                        : new Intl.DateTimeFormat(undefined, {
+                            timeZone: TZ,
                             weekday: "short",
                             month: "short",
                             day: "numeric",
                             year: "numeric",
-                          });
+                          }).format(new Date(row.keyDate));
 
                     return (
                       <div
@@ -405,12 +417,13 @@ console.log(bookingDetails);
 
               <h2 className="modal-title">
                 Events on{" "}
-                {selectedEventDay.date.toLocaleDateString(undefined, {
+                {new Intl.DateTimeFormat(undefined, {
+                  timeZone: TZ,
                   weekday: "long",
                   month: "long",
                   day: "numeric",
                   year: "numeric",
-                })}
+                }).format(selectedEventDay.date)}
               </h2>
 
               {selectedEventDay.events.map((ev) => {
@@ -421,13 +434,16 @@ console.log(bookingDetails);
                     ? new Date(ev.isoDate)
                     : null;
 
+                // Dubai-local time text
                 const timeText =
                   evDate && !isNaN(evDate)
-                    ? evDate.toLocaleTimeString([], {
+                    ? new Intl.DateTimeFormat(undefined, {
+                        timeZone: TZ,
                         hour: "2-digit",
                         minute: "2-digit",
-                      })
-                    : ev.isoDate ?? "Time unavailable";
+                        // hour12: false, // enable if you prefer 24h
+                      }).format(evDate)
+                    : "Time unavailable";
 
                 // Current user
                 const user = getLoggedInUser?.();
@@ -436,30 +452,21 @@ console.log(bookingDetails);
                 // Normalize event + date for comparisons
                 const eventName = String(ev.title || "").trim();
                 const eventNameKey = eventName.toLowerCase(); // IMPORTANT
+
+                // Date string for booking uniqueness should be Dubai's date
                 const eventDateStr =
-                  evDate instanceof Date && !isNaN(evDate)
-                    ? toLocalYMD(evDate)
-                    : toLocalYMD(selectedEventDay.date);
+                  evDate && !isNaN(evDate)
+                    ? ymdInTZ(evDate, TZ)
+                    : ymdInTZ(selectedEventDay.date, TZ);
 
                 const alreadyBooked =
                   !!userEmail &&
                   !bookingIdxLoading &&
                   hasBooked(bookingIndex, {
                     email: userEmail,
-                    event: eventNameKey, // lowercase
+                    event: eventNameKey,
                     date: eventDateStr,
                   });
-
-                if (DEBUG) {
-                  const key = `${String(userEmail)
-                    .toLowerCase()
-                    .trim()}|${eventNameKey}|${eventDateStr}`;
-                  console.log("[check]", {
-                    key,
-                    has: bookingIndex?.has?.(key),
-                    sample: Array.from(bookingIndex || []).slice(0, 5),
-                  });
-                }
 
                 const handleRegisterClick = async () => {
                   if (!isLoggedIn()) {
@@ -479,7 +486,7 @@ console.log(bookingDetails);
                     !bookingIdxLoading &&
                     hasBooked(bookingIndex, {
                       email: user.email,
-                      event: eventNameKey, // lowercase
+                      event: eventNameKey,
                       date: eventDateStr,
                     })
                   ) {
@@ -489,15 +496,15 @@ console.log(bookingDetails);
 
                   const bookingPayload = {
                     Email: user.email,
-                    EventDetails: eventName, // keep original case for backend
-                    date: eventDateStr,
+                    EventDetails: eventName, // original case for backend
+                    date: eventDateStr, // Dubai day
                   };
 
                   setBookingDetails(bookingPayload);
 
                   try {
                     await bookEvent(bookingPayload);
-                    // Optimistically add to index so UI disables immediately.
+                    // Optimistically add to index so UI disables immediately
                     setBookingIndex((prev) => {
                       const next = new Set(prev || []);
                       next.add(

@@ -1,3 +1,22 @@
+// src/api/fetchEvents.js
+// Groups events by the calendar day in Asia/Dubai and keeps a proper Date for formatting.
+
+const TZ = "Asia/Dubai";
+
+function ymdInTZ(date, tz = TZ) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+
+  const y = parts.find((p) => p.type === "year").value;
+  const m = parts.find((p) => p.type === "month").value; // "01".."12"
+  const d = parts.find((p) => p.type === "day").value; // "01".."31"
+  // Unpadded month/day to match your existing keys (e.g., 2025-10-4)
+  return `${y}-${String(Number(m))}-${String(Number(d))}`;
+}
 
 export async function fetchEvents() {
   try {
@@ -7,42 +26,35 @@ export async function fetchEvents() {
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
     const json = await res.json();
-    console.log("raw events json:", json);
-
     const items = Array.isArray(json.data) ? json.data : json.data?.data || [];
     const eventsMap = {};
 
     items.forEach((item) => {
-    
       const attrs = item.attributes ?? item;
 
+      // Your payload already includes full UTC timestamps (e.g., "...Z")
       const dateStr =
         attrs?.Date ??
         attrs?.date ??
-        attrs?.date_time ??
         attrs?.datetime ??
-        attrs?.time;
+        attrs?.date_time ??
+        null;
 
-      if (!dateStr) {
-        console.warn("Skipping event (no date):", item);
-        return;
-      }
+      if (!dateStr) return;
 
-      const d = new Date(dateStr);
-      if (isNaN(d)) {
-        console.warn("Skipping event (invalid date):", dateStr, item);
-        return;
-      }
+      const d = new Date(String(dateStr).trim());
+      if (isNaN(d)) return;
 
-      const key = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+      // Group by Dubai's calendar day, not by the raw UTC date
+      const key = ymdInTZ(d, TZ);
 
       const eventObj = {
         id:
           item.id ??
           attrs.id ??
           `${key}-${Math.random().toString(36).slice(2, 7)}`,
-        isoDate: dateStr,
-        dateObj: d,
+        isoDate: String(dateStr).trim(), // keep original ISO from API
+        dateObj: d, // real Date (UTC-based internally)
         title: attrs?.Details ?? attrs?.details ?? attrs?.title ?? "Event",
         location: attrs?.Location ?? attrs?.location ?? attrs?.place ?? "TBA",
         raw: attrs,
@@ -52,10 +64,12 @@ export async function fetchEvents() {
       eventsMap[key].push(eventObj);
     });
 
-    console.log("formatted eventsMap:", eventsMap);
     return eventsMap;
   } catch (error) {
     console.error("Failed to fetch events:", error);
     return {};
   }
 }
+
+// (Optional) export helper if you want to reuse in components
+export { ymdInTZ, TZ };
