@@ -1,5 +1,5 @@
 const FORGOT_URL =
-  "https://positive-health-719181f708.strapiapp.com/api/auth/forgot-password";
+  "https://enduring-laughter-217c2dfbab.strapiapp.com/api/auth/forgot-password";
 
 export async function forgotPassword(email) {
   const res = await fetch(FORGOT_URL, {

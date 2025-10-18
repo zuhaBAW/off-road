@@ -2,7 +2,7 @@
 export async function fetchEvents() {
   try {
     const res = await fetch(
-      "https://positive-health-719181f708.strapiapp.com/api/events?populate=*"
+      "https://enduring-laughter-217c2dfbab.strapiapp.com/api/events?populate=*"
     );
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 

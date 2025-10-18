@@ -1,4 +1,4 @@
-const API_URL = "https://positive-health-719181f708.strapiapp.com/api";
+const API_URL = "https://enduring-laughter-217c2dfbab.strapiapp.com/api";
 const BOOKED_URL = `${API_URL}/booked-users`;
 
 /** ---- Create a booking ---- */

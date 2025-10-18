@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "./reset-password.css";
 
-const API_BASE = "https://positive-health-719181f708.strapiapp.com";
+const API_BASE = "https://enduring-laughter-217c2dfbab.strapiapp.com";
 
 export default function ResetPassword() {
   const [params] = useSearchParams();

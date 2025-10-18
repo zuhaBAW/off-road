@@ -2,7 +2,7 @@
 export async function fetchTestimonials() {
   try {
     const res = await fetch(
-      "https://positive-health-719181f708.strapiapp.com/api/testimonials?populate=*"
+      "https://enduring-laughter-217c2dfbab.strapiapp.com/api/testimonials?populate=*"
     );
     if (!res.ok) throw new Error("Failed to fetch testimonials");
 

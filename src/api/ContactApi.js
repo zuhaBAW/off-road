@@ -1,4 +1,4 @@
-const API_URL = "https://positive-health-719181f708.strapiapp.com/contact";
+const API_URL = "https://enduring-laughter-217c2dfbab.strapiapp.com/contact";
 
 export async function submitContact(formData) {
   try {

@@ -1,6 +1,6 @@
 export async function createRegistration(payload) {
   const url =
-    "https://positive-health-719181f708.strapiapp.com/api/auth/local/register";
+    "https://enduring-laughter-217c2dfbab.strapiapp.com/api/auth/local/register";
 
   const res = await fetch(url, {
     method: "POST",

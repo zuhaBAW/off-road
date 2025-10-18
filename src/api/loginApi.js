@@ -1,4 +1,4 @@
-const API_URL = "https://positive-health-719181f708.strapiapp.com/api";
+const API_URL = "https://enduring-laughter-217c2dfbab.strapiapp.com/api";
 
 export async function loginUser(payload) {
   const res = await fetch(`${API_URL}/auth/local`, {
